@@ -1,0 +1,85 @@
+const User = require("../model/user.js")
+const bcryptjs = require("bcryptjs")
+const jwt = require("jasonwebtoken");
+const signup = async (req, res, next) => {
+  const { name, email, password, profileImageUrl, adminJoinCode } = req.body
+
+  if (
+    !name ||
+    !email ||
+    !password ||
+    name === "" ||
+    email === "" ||
+    password === ""
+  ) {
+    return next(errorHandler(400, "All fields are required"))
+  }
+
+  const isAlreadyExist = await User.findOne({ email })
+
+  if (isAlreadyExist) {
+    return next(errorHandler(400, "User already exists"))
+  }
+
+  let role = "user"
+
+  if (adminJoinCode && adminJoinCode === process.env.ADMIN_JOIN_CODE) {
+    role = "admin"
+  }
+
+  const hashedPassword = bcryptjs.hashSync(password, 10)
+
+  const newUser = new User({
+    name,
+    email,
+    password: hashedPassword,
+    profileImageUrl,
+    role,
+  })
+
+  try {
+    await newUser.save()
+
+    res.json("Signup successful")
+  } catch (error) {
+    next(error.message)
+  }
+}
+
+const signin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+
+    if (!email || !password || email === "" || password === "") {
+      return next(errorHandler(400, "All fields are required"))
+    }
+
+    const validUser = await User.findOne({ email })
+
+    if (!validUser) {
+      return next(errorHandler(404, "User not found!"))
+    }
+
+    const validPassword = bcryptjs.compareSync(password, validUser.password)
+
+    if (!validPassword) {
+      return next(errorHandler(400, "Wrong Credentials"))
+    }
+
+    const token = jwt.sign(
+      { id: validUser._id, role: validUser.role },
+      process.env.JWT_SECRET
+    )
+
+    const { password: pass, ...rest } = validUser._doc
+
+    res.status(200).cookie("access_token", token, { httpOnly: true }).json(rest)
+  } catch (error) {
+    next(error)
+  }
+}
+
+module.exports = {
+    signup,
+    signin
+}
