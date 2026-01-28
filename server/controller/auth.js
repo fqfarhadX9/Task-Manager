@@ -1,6 +1,7 @@
 const User = require("../model/user.js")
 const bcryptjs = require("bcryptjs")
-const jwt = require("jasonwebtoken");
+const jwt = require("jsonwebtoken");
+const errorHandler = require("../utils/error.js");
 const signup = async (req, res, next) => {
   const { name, email, password, profileImageUrl, adminJoinCode } = req.body
 
@@ -23,7 +24,7 @@ const signup = async (req, res, next) => {
 
   let role = "user"
 
-  if (adminJoinCode && adminJoinCode === process.env.ADMIN_JOIN_CODE) {
+  if (adminJoinCode && adminJoinCode === process.env.ADMINJOIN_CODE ) {
     role = "admin"
   }
 
