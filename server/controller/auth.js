@@ -2,83 +2,105 @@ const User = require("../model/user.js")
 const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken");
 const errorHandler = require("../utils/error.js");
-const signup = async (req, res, next) => {
-  const { name, email, password, profileImageUrl, adminJoinCode } = req.body
 
-  if (
-    !name ||
-    !email ||
-    !password ||
-    name === "" ||
-    email === "" ||
-    password === ""
-  ) {
-    return next(errorHandler(400, "All fields are required"))
-  }
-
-  const isAlreadyExist = await User.findOne({ email })
-
-  if (isAlreadyExist) {
-    return next(errorHandler(400, "User already exists"))
-  }
-
-  let role = "user"
-
-  if (adminJoinCode && adminJoinCode === process.env.ADMINJOIN_CODE ) {
-    role = "admin"
-  }
-
-  const hashedPassword = bcryptjs.hashSync(password, 10)
-
-  const newUser = new User({
-    name,
-    email,
-    password: hashedPassword,
-    profileImageUrl,
-    role,
-  })
-
+const signup = async (req, res) => {
   try {
-    await newUser.save()
+    const { name, email, password, profileImageUrl, adminJoinCode } = req.body;
 
-    res.json("Signup successful")
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const isAlreadyExist = await User.findOne({ email });
+    if (isAlreadyExist) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    let role = "user";
+    if (
+      adminJoinCode &&
+      adminJoinCode === process.env.ADMINJOIN_CODE
+    ) {
+      role = "admin";
+    }
+
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      profileImageUrl,
+      role,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: "Signup successful" });
   } catch (error) {
-    next(error.message)
+    res.status(500).json({
+      message: "Signup failed",
+      error: error.message,
+    });
   }
-}
+};
 
-const signin = async (req, res, next) => {
+const signin = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
-    if (!email || !password || email === "" || password === "") {
-      return next(errorHandler(400, "All fields are required"))
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
     }
 
-    const validUser = await User.findOne({ email })
+    const user = await User.findOne({ email }).select("+password");
 
-    if (!validUser) {
-      return next(errorHandler(404, "User not found!"))
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
     }
 
-    const validPassword = bcryptjs.compareSync(password, validUser.password)
+    const isPasswordMatch = await bcryptjs.compare(
+      password,
+      user.password
+    );
 
-    if (!validPassword) {
-      return next(errorHandler(400, "Wrong Credentials"))
+    if (!isPasswordMatch) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
     }
 
     const token = jwt.sign(
-      { id: validUser._id, role: validUser.role },
-      process.env.JWT_SECRET
-    )
+      {
+        id: user._id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
-    const { password: pass, ...rest } = validUser._doc
+    // remove password before sending user data
+    const { password: _, ...userData } = user._doc;
 
-    res.status(200).cookie("access_token", token, { httpOnly: true }).json(rest)
+    res.status(200).json({
+      message: "Signin successful",
+      token,
+      user: userData,
+    });
   } catch (error) {
-    next(error)
+    res.status(500).json({
+      message: "Signin failed",
+      error: error.message,
+    });
   }
-}
+};
+
 
 const getUserProfile = async (req, res, next) => {
   try {

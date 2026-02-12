@@ -1,6 +1,6 @@
 const express = require("express");
 const { signup, signin, getUserProfile, updateUserProfile, uploadImage, signout } = require("../controller/auth");
-const { verifyToken } = require("../middleware/verifyUser");
+const { verifyToken } = require("../middleware/authMiddleware");
 const upload = require("../middleware/multer");
 
 const router = express.Router()
