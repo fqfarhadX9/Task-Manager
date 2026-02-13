@@ -52,12 +52,32 @@ const taskSchema = new mongoose.Schema(
 taskSchema.pre("save", function (next) {
   if (this.todoChecklist.length === 0) {
     this.progress = 0;
-  } else {
-    const completed = this.todoChecklist.filter(t => t.completed).length;
-    this.progress = Math.round(
-      (completed / this.todoChecklist.length) * 100
-    );
+    this.status = "Pending";
+    return next();
   }
+
+  const completedCount = this.todoChecklist.filter(
+    (todo) => todo.completed
+  ).length;
+
+  this.progress = Math.round(
+    (completedCount / this.todoChecklist.length) * 100
+  );
+
+  // Auto Status Logic
+  if (this.progress === 100) {
+    this.status = "Completed";
+  } else if (this.progress > 0) {
+    this.status = "In Progress";
+  } else {
+    this.status = "Pending";
+  }
+  next();
+});
+
+
+taskSchema.pre(/^find/, function (next) {
+  this.where({ isDeleted: false });
   next();
 });
 

@@ -24,31 +24,77 @@ const createTask = async (req, res) => {
 
 const getMyTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({
-      assignedTo: req.user._id,
-    }).populate("createdBy", "name email");
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    res.json(tasks);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const { search, status, priority } = req.query;
+
+    let query = {
+      createdBy: req.user._id,
+    };
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (priority) {
+      query.priority = priority;
+    }
+
+    const tasks = await Task.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalTasks = await Task.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      page,
+      totalTasks,
+      totalPages: Math.ceil(totalTasks / limit),
+      tasks,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
 const assignTask = async (req, res) => {
   try {
-    const { users } = req.body;
-    const task = await Task.findById(req.params.id);
+    const { id } = req.params;
+    const { userIds } = req.body;
+
+    if (!userIds || userIds.length === 0) {
+      return res.status(400).json({ message: "User IDs required" });
+    }
+
+    const task = await Task.findById(id);
 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    task.assignedTo = users;
+    userIds.forEach(userId => {
+      if (!task.assignedTo.includes(userId)) {
+        task.assignedTo.push(userId);
+      }
+    });
+
     await task.save();
 
-    res.json({ message: "Task assigned", task });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({
+      success: true,
+      message: "Task assigned successfully",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -77,6 +123,34 @@ const updateTask = async (req, res) => {
   }
 };
 
+const deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator = task.createdBy
+      .map(id => id.toString())
+      .includes(req.user._id.toString());
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    task.isDeleted = true;
+    await task.save();
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 const addTodo = async (req, res) => {
   try {
     const { text } = req.body;
@@ -103,7 +177,7 @@ const addTodo = async (req, res) => {
   }
 };
 
-const toggleTodo = async (req, res) => {
+const updateTodo = async (req, res) => {
   try {
     const { taskId, todoId } = req.params;
     const task = await Task.findById(taskId);
@@ -126,6 +200,158 @@ const toggleTodo = async (req, res) => {
   }
 };
 
+const deleteTodo = async (req, res) => {
+  try {
+    const { taskId, todoId } = req.params;
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // permission: assigned user or admin
+    if (
+      !task.assignedTo.includes(req.user._id) &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    const todo = task.todoChecklist.id(todoId);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    todo.deleteOne(); 
+    await task.save();
+
+    res.json({ message: "Todo deleted", task });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const getAllTasks = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { search, status, priority } = req.query;
+
+    let query = {};
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (priority) {
+      query.priority = priority;
+    }
+
+    const tasks = await Task.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalTasks = await Task.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      page,
+      totalTasks,
+      totalPages: Math.ceil(totalTasks / limit),
+      tasks,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getAssignedTasks = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { search, status, priority } = req.query;
+
+    let query = {
+      assignedTo: req.user._id, 
+    };
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (priority) {
+      query.priority = priority;
+    }
+
+    const tasks = await Task.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalTasks = await Task.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      page,
+      totalTasks,
+      totalPages: Math.ceil(totalTasks / limit),
+      tasks,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateTaskStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatus = ["Pending", "In Progress", "Completed"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isAssigned = task.assignedTo.includes(req.user._id);
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAssigned && !isAdmin) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    task.status = status;
+    await task.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Task status updated",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 module.exports = {
   createTask,
@@ -133,5 +359,10 @@ module.exports = {
   assignTask,
   updateTask,
   addTodo,
-  toggleTodo,
+  updateTodo,
+  deleteTodo,
+  deleteTask,
+  getAllTasks,
+  getAssignedTasks,
+  updateTaskStatus,
 };
