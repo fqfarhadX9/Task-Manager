@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require("./config/db.js");
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/auth.js')
-const taskRoutes = require('./routes/Task.routes.js');
+const taskRoutes = require('./routes/task.routes.js');
 
 dotenv.config(); 
 connectDB();
@@ -28,15 +28,3 @@ const port = process.env.PORT || 8800;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500
-
-  const message = err.message || "Internal Server Error"
-
-  res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  })
-})

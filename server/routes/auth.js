@@ -1,21 +1,18 @@
 const express = require("express");
-const { signup, signin, getUserProfile, updateUserProfile, uploadImage, signout } = require("../controller/auth");
-const { verifyToken } = require("../middleware/authMiddleware");
-const upload = require("../middleware/multer");
-
+const { signup, signin} = require("../controller/auth");
 const router = express.Router()
 
 router.post("/signup", signup)
 
 router.post("/signin", signin)
 
-router.get("/user-profile", verifyToken, getUserProfile)
+// router.get("/user-profile", verifyToken, getUserProfile)
 
-router.put("/update-profile", verifyToken, updateUserProfile)
+// router.put("/update-profile", verifyToken, updateUserProfile)
 
-router.post("/upload-image", upload.single("image"), uploadImage)
+// router.post("/upload-image", upload.single("image"), uploadImage)
 
-router.post("/sign-out", signout)
+// router.post("/sign-out", signout)
 
 
 module.exports = router
