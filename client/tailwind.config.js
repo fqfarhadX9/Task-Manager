@@ -1,12 +1,14 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        xblue: "#1D9BF0",
+        xgray: "#16181C",
+        xborder: "#2F3336",
+      },
+    },
   },
   plugins: [],
-}
-
+};
