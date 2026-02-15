@@ -4,8 +4,8 @@ const createTask = async (req, res) => {
   try {
     const { title, description, dueDate, priority } = req.body;
 
-    if (!title || !dueDate) {
-      return res.status(400).json({ message: "Title & Due Date required" });
+    if (!title || !dueDate || !description) {
+      return res.status(400).json({ message: "Title, Description & Due Date required" });
     }
 
     const task = await Task.create({
@@ -320,7 +320,7 @@ const updateTaskStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const allowedStatus = ["Pending", "In Progress", "Completed"];
+    const allowedStatus = ["pending", "in_progress", "completed"];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
@@ -331,7 +331,10 @@ const updateTaskStatus = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isAssigned = task.assignedTo.includes(req.user._id);
+    const isAssigned = task.assignedTo.some(
+      (id) => id.toString() === req.user._id.toString()
+    );
+
     const isAdmin = req.user.role === "admin";
 
     if (!isAssigned && !isAdmin) {

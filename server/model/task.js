@@ -49,11 +49,11 @@ const taskSchema = new mongoose.Schema(
 );
 
 // auto progress calculation
-taskSchema.pre("save", function (next) {
+taskSchema.pre("save", function () {
   if (this.todoChecklist.length === 0) {
     this.progress = 0;
-    this.status = "Pending";
-    return next();
+    this.status = "pending";
+    return;
   }
 
   const completedCount = this.todoChecklist.filter(
@@ -64,22 +64,15 @@ taskSchema.pre("save", function (next) {
     (completedCount / this.todoChecklist.length) * 100
   );
 
-  // Auto Status Logic
   if (this.progress === 100) {
-    this.status = "Completed";
+    this.status = "completed";
   } else if (this.progress > 0) {
-    this.status = "In Progress";
+    this.status = "in_progress";
   } else {
-    this.status = "Pending";
+    this.status = "pending";
   }
-  next();
 });
 
-
-taskSchema.pre(/^find/, function (next) {
-  this.where({ isDeleted: false });
-  next();
-});
 
 const Task = mongoose.model("Task", taskSchema);
 module.exports = Task
