@@ -50,6 +50,10 @@ const taskSchema = new mongoose.Schema(
 
 // auto progress calculation
 taskSchema.pre("save", function () {
+  if (!this.isModified("todoChecklist")) {
+    return;
+  }
+
   if (this.todoChecklist.length === 0) {
     this.progress = 0;
     this.status = "pending";

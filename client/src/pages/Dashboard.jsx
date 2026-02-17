@@ -28,7 +28,7 @@ const Dashboard = () => {
   // Stats calculations
   const total = tasks.length;
   const pending = tasks.filter(task => task && task.status === "pending").length;
-  const inProgress = tasks.filter(task => task && task.status === "in-progress").length;
+  const inProgress = tasks.filter(task => task && task.status === "in_progress").length;
   const completed = tasks.filter(task => task && task.status === "completed").length;
 
   return (

@@ -1,17 +1,16 @@
-import { data } from "react-router-dom";
 import axios from "../api/axios";
 
 const TaskCard = ({ task, setTasks }) => {
 
   const updateStatus = async (newStatus) => {
     try {
-      await axios.put(`/task/status/${task._id}`, {
+      const {data} = await axios.put(`/task/status/${task._id}`, {
         status: newStatus
       });
-
+      console.log(data);
       setTasks(prevTasks => 
         prevTasks.map(t => 
-          t._id === task._id ? data.task : t))
+          t && t._id === data.task._id ? data.task : t))
     } catch (error) {
       console.error(error);
     }
