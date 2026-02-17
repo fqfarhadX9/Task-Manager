@@ -7,7 +7,6 @@ const TaskCard = ({ task, setTasks }) => {
       const {data} = await axios.put(`/task/status/${task._id}`, {
         status: newStatus
       });
-      console.log(data);
       setTasks(prevTasks => 
         prevTasks.map(t => 
           t && t._id === data.task._id ? data.task : t))
@@ -25,7 +24,23 @@ const TaskCard = ({ task, setTasks }) => {
 
   return (
     <div className="bg-gray-900 p-4 rounded-xl shadow-md">
-      <h3 className="text-lg font-semibold">{task.title}</h3>
+     <div className="flex justify-between items-start">
+        <h3 className="text-lg font-semibold">{task.title}</h3>
+
+        <span
+          className={`px-2 py-1 text-xs rounded
+            ${
+              task.priority === "high"
+                ? "bg-red-600"
+                : task.priority === "medium"
+                ? "bg-yellow-500"
+                : "bg-green-600"
+            }
+          `}
+        >
+          {task.priority}
+        </span>
+    </div>
       <p className="text-sm text-gray-400">{task.description}</p>
       <p className="mt-2 text-sm">Status: {task.status}</p>
 

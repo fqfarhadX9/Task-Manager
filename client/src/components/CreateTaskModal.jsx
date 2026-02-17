@@ -5,6 +5,7 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("medium");
 
 
   const handleSubmit = async (e) => {
@@ -14,7 +15,8 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
       await axios.post("/task", {
         title,
         description,
-        dueDate
+        dueDate,
+        priority
       });
     //   console.log("Full response:", res);
     //   console.log("Server response only:", res.data);
@@ -57,6 +59,18 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
             required
           />
           </label>
+
+          <div className="flex flex-col gap-1">
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="bg-gray-800 p-3 rounded"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
 
           <div className="flex justify-end gap-3">
             <button

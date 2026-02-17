@@ -9,6 +9,22 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen]  = useState(false)
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
+
+
+  // Stats calculations
+  const filteredTasks = tasks.filter(task =>
+    task?.title.toLowerCase().includes(search.toLowerCase()) &&
+    (statusFilter ? task.status === statusFilter : true) &&
+    (priorityFilter ? task.priority === priorityFilter : true)
+  );
+ 
+  const total = filteredTasks.length;
+  const pending = filteredTasks.filter(task => task?.status === "pending").length;
+  const inProgress = filteredTasks.filter(task => task?.status === "in_progress").length;
+  const completed = filteredTasks.filter(task => task?.status === "completed").length;
 
   const fetchTasks = async () => {
     try {
@@ -24,12 +40,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchTasks();
   }, []);
-
-  // Stats calculations
-  const total = tasks.length;
-  const pending = tasks.filter(task => task?.status === "pending").length;
-  const inProgress = tasks.filter(task => task?.status === "in_progress").length;
-  const completed = tasks.filter(task => task?.status === "completed").length;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -58,6 +68,38 @@ const Dashboard = () => {
       </div>
 
         {/* Stats */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+          />
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+          >
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700"
+          >
+            <option value="">All Priority</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard title="Total Tasks" value={total} />
           <StatsCard title="Pending" value={pending} />
@@ -71,11 +113,11 @@ const Dashboard = () => {
 
           {loading ? (
             <p>Loading tasks...</p>
-          ) : tasks.length === 0 ? (
+          ) : filteredTasks.length === 0 ? (
             <p>No tasks yet 😑</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <TaskCard key={task._id} task={task} setTasks={setTasks}/>
               ))}
             </div>
