@@ -106,10 +106,16 @@ const updateTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    if (
-      task.createdBy.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    const isAssigned = task.assignedTo.some(
+      (id) => id.toString() === req.user._id.toString()
+    );
+
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAssigned && !isAdmin && !isCreator) {
       return res.status(403).json({ message: "Not allowed" });
     }
 

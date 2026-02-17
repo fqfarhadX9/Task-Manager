@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal.jsx";
+import EditTaskModal from "../components/EdittaskModal.jsx";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [editingTask, setEditingTask] = useState(null);
 
 
   // Stats calculations
@@ -118,10 +120,19 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTasks.map((task) => (
-                <TaskCard key={task._id} task={task} setTasks={setTasks}/>
+                <TaskCard key={task._id} task={task} setTasks={setTasks} setEditingTask={setEditingTask}/>
               ))}
             </div>
           )}
+
+          {editingTask && (
+            <EditTaskModal
+              task={editingTask}
+              setEditingTask={setEditingTask}
+              setTasks={setTasks}
+            />
+          )}
+
         </div>
 
       </div>

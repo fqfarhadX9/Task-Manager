@@ -1,6 +1,6 @@
 import axios from "../api/axios";
 
-const TaskCard = ({ task, setTasks }) => {
+const TaskCard = ({ task, setTasks, setEditingTask }) => {
 
   const updateStatus = async (newStatus) => {
     try {
@@ -21,6 +21,19 @@ const TaskCard = ({ task, setTasks }) => {
     task.createdBy === user._id ||
     task.assignedTo?.includes(user._id);
 
+  const today = new Date();
+  const taskDate = new Date(task.dueDate);
+
+  today.setHours(0, 0, 0, 0);
+  taskDate.setHours(0, 0, 0, 0);
+
+  let dueDateClass = "text-green-400";
+
+  if (taskDate < today) {
+    dueDateClass = "text-red-500";
+  } else if (taskDate.getTime() === today.getTime()) {
+    dueDateClass = "text-yellow-400";
+  }
 
   return (
     <div className="bg-gray-900 p-4 rounded-xl shadow-md">
@@ -43,6 +56,10 @@ const TaskCard = ({ task, setTasks }) => {
     </div>
       <p className="text-sm text-gray-400">{task.description}</p>
       <p className="mt-2 text-sm">Status: {task.status}</p>
+      <p className={`mt-1 text-sm ${dueDateClass}`}>
+        Due: {task.dueDate?.split("T")[0]}
+      </p>
+
 
       <div className="flex gap-2 mt-3">
          {canUpdate && (<button
@@ -62,6 +79,15 @@ const TaskCard = ({ task, setTasks }) => {
         >
           Completed
         </button>
+        )}
+
+        {canUpdate && (
+          <button
+            onClick={() => setEditingTask(task)}
+            className="bg-gray-700 px-3 py-1 rounded"
+          >
+            Edit
+          </button>
         )}
       </div>
     </div>
