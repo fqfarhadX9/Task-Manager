@@ -335,9 +335,12 @@ const updateTaskStatus = async (req, res) => {
       (id) => id.toString() === req.user._id.toString()
     );
 
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
     const isAdmin = req.user.role === "admin";
 
-    if (!isAssigned && !isAdmin) {
+    if (!isAssigned && !isAdmin && !isCreator) {
       return res.status(403).json({ message: "Not allowed" });
     }
 

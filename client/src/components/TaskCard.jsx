@@ -16,6 +16,13 @@ const TaskCard = ({ task, setTasks }) => {
     }
   };
 
+  const user =  JSON.parse(localStorage.getItem("user"));
+  const canUpdate =
+    user.role === "admin" ||
+    task.createdBy === user._id ||
+    task.assignedTo?.includes(user._id);
+
+
   return (
     <div className="bg-gray-900 p-4 rounded-xl shadow-md">
       <h3 className="text-lg font-semibold">{task.title}</h3>
@@ -23,19 +30,24 @@ const TaskCard = ({ task, setTasks }) => {
       <p className="mt-2 text-sm">Status: {task.status}</p>
 
       <div className="flex gap-2 mt-3">
-        <button
+         {canUpdate && (<button
           onClick={() => updateStatus("in_progress")}
           className="bg-yellow-500 px-3 py-1 rounded"
+          disabled={task.status === "in_progress"}
         >
           In Progress
         </button>
+         )}
 
-        <button
+        {canUpdate && (
+          <button
           onClick={() => updateStatus("completed")}
           className="bg-green-600 px-3 py-1 rounded"
+          disabled={task.status === "completed"}
         >
           Completed
         </button>
+        )}
       </div>
     </div>
   );

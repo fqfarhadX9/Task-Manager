@@ -27,9 +27,9 @@ const Dashboard = () => {
 
   // Stats calculations
   const total = tasks.length;
-  const pending = tasks.filter(task => task && task.status === "pending").length;
-  const inProgress = tasks.filter(task => task && task.status === "in_progress").length;
-  const completed = tasks.filter(task => task && task.status === "completed").length;
+  const pending = tasks.filter(task => task?.status === "pending").length;
+  const inProgress = tasks.filter(task => task?.status === "in_progress").length;
+  const completed = tasks.filter(task => task?.status === "completed").length;
 
   return (
     <div className="min-h-screen bg-black text-white">
