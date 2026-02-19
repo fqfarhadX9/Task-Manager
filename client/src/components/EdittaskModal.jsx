@@ -17,7 +17,6 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
         dueDate,
         priority,
       });
-      console.log("updated data ->: ", data)
 
       setTasks(prev =>
         prev.map(t =>

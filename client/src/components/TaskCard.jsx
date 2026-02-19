@@ -1,6 +1,9 @@
+import { useState } from "react";
 import axios from "../api/axios";
+import AssignUsersModal from "./AssignUsersModel";
 
 const TaskCard = ({ task, setTasks, setEditingTask }) => {
+  const [assignOpen, setAssignOpen] = useState(false);
 
   const updateStatus = async (newStatus) => {
     try {
@@ -59,6 +62,10 @@ const TaskCard = ({ task, setTasks, setEditingTask }) => {
       <p className={`mt-1 text-sm ${dueDateClass}`}>
         Due: {task.dueDate?.split("T")[0]}
       </p>
+      <p>
+        Assigned To: {task.assignedTo.length}
+      </p>
+
 
 
       <div className="flex gap-2 mt-3">
@@ -89,6 +96,23 @@ const TaskCard = ({ task, setTasks, setEditingTask }) => {
             Edit
           </button>
         )}
+
+        {(user.role === "admin" || task.createdBy === user._id) && (
+          <button
+            onClick={() => setAssignOpen(true)}
+            className="bg-blue-500 px-3 py-1 rounded"
+          >
+            Assign Users
+          </button>
+        )}
+        {assignOpen && (
+          <AssignUsersModal
+            task={task}
+            setOpen={setAssignOpen}
+            setTasks={setTasks}
+          />
+        )}
+
       </div>
     </div>
   );
