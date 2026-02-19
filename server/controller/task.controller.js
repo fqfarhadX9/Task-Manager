@@ -81,7 +81,11 @@ const assignTask = async (req, res) => {
     }
 
     userIds.forEach(userId => {
-      if (!task.assignedTo.includes(userId)) {
+      const alreadyAssigned = task.assignedTo.some(
+        id => id.toString() === userId.toString()
+      );
+
+      if (!alreadyAssigned) {
         task.assignedTo.push(userId);
       }
     });
