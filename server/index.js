@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/auth.js')
 const userRoutes = require('./routes/user.route.js');
 const taskRoutes = require('./routes/task.routes.js');
+const commentRoutes = require('./routes/comment.routes.js');
 
 dotenv.config(); 
 connectDB();
@@ -24,6 +25,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/task", taskRoutes);
+app.use("/api/comment", commentRoutes)
 
 const port = process.env.PORT || 8800;
 
