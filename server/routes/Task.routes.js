@@ -8,14 +8,12 @@ const {
   getMyTasks,
   assignTask,
   updateTask,
-  addTodo,
-  updateTodo,
-  deleteTodo, 
   deleteTask, 
   getAllTasks, 
   getAssignedTasks, 
   updateTaskStatus,
-  unassignTask
+  unassignTask,
+  getSingleTask,
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
@@ -23,13 +21,11 @@ router.get("/my-tasks", protect, getMyTasks);
 router.put("/assign/:id", protect, isAdmin, assignTask);
 router.put("/unassign/:id", protect, unassignTask);
 router.put("/:id", protect, updateTask);
-router.post("/:id/todo", protect, addTodo);
-router.put("/:taskId/todo/:todoId", protect, updateTodo);
-router.delete("/:taskId/todo/:todoId", protect, deleteTodo);
 router.delete("/:id", protect, isAdmin, deleteTask);
 router.get("/", protect, isAdmin, getAllTasks);
 router.get("/assigned", protect, getAssignedTasks);
 router.put("/status/:id", protect, updateTaskStatus);
+router.get("/:id", protect, getSingleTask);
 
 
 

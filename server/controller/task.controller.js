@@ -31,7 +31,10 @@ const getMyTasks = async (req, res) => {
     const { search, status, priority } = req.query;
 
     let query = {
-      createdBy: req.user._id,
+      $or: [
+        { createdBy: req.user._id },
+        { assignedTo: req.user._id },
+      ],
     };
 
     if (search) {
@@ -208,87 +211,6 @@ const deleteTask = async (req, res) => {
   }
 };
 
-
-const addTodo = async (req, res) => {
-  try {
-    const { text } = req.body;
-    const task = await Task.findById(req.params.id);
-
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-
-    // only assigned user or admin
-    if (
-      !task.assignedTo.includes(req.user._id) &&
-      req.user.role !== "admin"
-    ) {
-      return res.status(403).json({ message: "Not allowed" });
-    }
-
-    task.todoChecklist.push({ text });
-    await task.save(); // pre-save hook progress update karega
-
-    res.json(task);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-const updateTodo = async (req, res) => {
-  try {
-    const { taskId, todoId } = req.params;
-    const task = await Task.findById(taskId);
-
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-
-    const todo = task.todoChecklist.id(todoId);
-    if (!todo) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
-
-    todo.completed = !todo.completed;
-    await task.save(); 
-
-    res.json(task);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-const deleteTodo = async (req, res) => {
-  try {
-    const { taskId, todoId } = req.params;
-
-    const task = await Task.findById(taskId);
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-
-    // permission: assigned user or admin
-    if (
-      !task.assignedTo.includes(req.user._id) &&
-      req.user.role !== "admin"
-    ) {
-      return res.status(403).json({ message: "Not allowed" });
-    }
-
-    const todo = task.todoChecklist.id(todoId);
-    if (!todo) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
-
-    todo.deleteOne(); 
-    await task.save();
-
-    res.json({ message: "Todo deleted", task });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 const getAllTasks = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -415,17 +337,49 @@ const updateTaskStatus = async (req, res) => {
   }
 };
 
+const getSingleTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const task = await Task.findById(id)
+      .populate("assignedTo", "name email")
+      .populate("createdBy", "name email");
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator =
+      task.createdBy._id.toString() === req.user._id.toString();
+
+    const isAssigned =
+      task.assignedTo.some(
+        u => u._id.toString() === req.user._id.toString()
+      );
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isCreator && !isAssigned && !isAdmin) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    res.status(200).json({ task });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   createTask,
   getMyTasks,
   assignTask,
   unassignTask,
   updateTask,
-  addTodo,
-  updateTodo,
-  deleteTodo,
   deleteTask,
   getAllTasks,
   getAssignedTasks,
   updateTaskStatus,
+  getSingleTask,
 };
