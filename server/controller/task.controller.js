@@ -49,7 +49,8 @@ const getMyTasks = async (req, res) => {
     const tasks = await Task.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate("assignedTo", "name email");
 
     const totalTasks = await Task.countDocuments(query);
 
@@ -74,7 +75,7 @@ const assignTask = async (req, res) => {
       return res.status(400).json({ message: "User IDs required" });
     }
 
-    const task = await Task.findById(id);
+    const task = await Task.findById(id)
 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
@@ -92,11 +93,58 @@ const assignTask = async (req, res) => {
 
     await task.save();
 
+    const updatedTask = await Task.findById(id)
+      .populate("assignedTo", "name email");
+
     res.status(200).json({
       success: true,
       message: "Task assigned successfully",
-      task,
+      task: updatedTask,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const unassignTask = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID required" });
+    }
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAdmin && !isCreator) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    task.assignedTo = task.assignedTo.filter(
+      assignedId => assignedId.toString() !== userId.toString()
+    );
+
+    await task.save();
+
+    const updatedTask = await Task.findById(id)
+      .populate("assignedTo", "name email");
+
+    res.status(200).json({
+      success: true,
+      message: "User unassigned successfully",
+      task: updatedTask,
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -371,6 +419,7 @@ module.exports = {
   createTask,
   getMyTasks,
   assignTask,
+  unassignTask,
   updateTask,
   addTodo,
   updateTodo,

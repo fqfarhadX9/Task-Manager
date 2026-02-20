@@ -28,6 +28,19 @@ const Dashboard = () => {
   const inProgress = filteredTasks.filter(task => task?.status === "in_progress").length;
   const completed = filteredTasks.filter(task => task?.status === "completed").length;
 
+  const handleUnassign = async (taskId, userId) => {
+      try {
+        const {data} = await axios.put(`/task/unassign/${taskId}`, {
+          userId
+        });
+        setTasks(prevTasks => 
+          prevTasks.map(t => 
+            t && t._id === data.task._id ? data.task : t))
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   const fetchTasks = async () => {
     try {
       const { data } = await axios.get("/task/my-tasks");
@@ -120,7 +133,13 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTasks.map((task) => (
-                <TaskCard key={task._id} task={task} setTasks={setTasks} setEditingTask={setEditingTask}/>
+                <TaskCard 
+                key={task._id} 
+                task={task} 
+                setTasks={setTasks} 
+                setEditingTask={setEditingTask}
+                handleUnassign={handleUnassign}
+                />
               ))}
             </div>
           )}

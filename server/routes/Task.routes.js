@@ -14,12 +14,14 @@ const {
   deleteTask, 
   getAllTasks, 
   getAssignedTasks, 
-  updateTaskStatus
+  updateTaskStatus,
+  unassignTask
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
 router.get("/my-tasks", protect, getMyTasks);
 router.put("/assign/:id", protect, isAdmin, assignTask);
+router.put("/unassign/:id", protect, unassignTask);
 router.put("/:id", protect, updateTask);
 router.post("/:id/todo", protect, addTodo);
 router.put("/:taskId/todo/:todoId", protect, updateTodo);

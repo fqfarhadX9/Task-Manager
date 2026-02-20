@@ -14,7 +14,7 @@ const AssignUsersModal = ({ task, setOpen, setTasks }) => {
       const { data } = await axios.get("/user");
       setUsers(data.users);
       //already assigned users should be selected on the UI
-      setSelected(task.assignedTo || []);
+      setSelected(task.assignedTo.map(u => u._id) || []);
     };
     fetchUsers();
   }, []);

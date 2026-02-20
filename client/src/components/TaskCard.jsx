@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "../api/axios";
 import AssignUsersModal from "./AssignUsersModel";
 
-const TaskCard = ({ task, setTasks, setEditingTask }) => {
+const TaskCard = ({ task, setTasks, setEditingTask, handleUnassign }) => {
   const [assignOpen, setAssignOpen] = useState(false);
 
   const updateStatus = async (newStatus) => {
@@ -17,6 +17,7 @@ const TaskCard = ({ task, setTasks, setEditingTask }) => {
       console.error(error);
     }
   };
+  
 
   const user =  JSON.parse(localStorage.getItem("user"));
   const canUpdate =
@@ -62,11 +63,22 @@ const TaskCard = ({ task, setTasks, setEditingTask }) => {
       <p className={`mt-1 text-sm ${dueDateClass}`}>
         Due: {task.dueDate?.split("T")[0]}
       </p>
-      <p>
-        Assigned To: {task.assignedTo.length}
-      </p>
-
-
+      <div className="flex flex-wrap gap-2 mt-2">
+        Assigned:{task.assignedTo.map(u => (
+          <div
+            key={u._id}
+            className="flex items-center gap-1 bg-gray-700 px-2 py-1 rounded text-xs"
+          >
+            {u.name}
+            <button
+              onClick={() => handleUnassign(task._id, u._id)}
+              className="text-red-400 ml-1"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
 
       <div className="flex gap-2 mt-3">
          {canUpdate && (<button
