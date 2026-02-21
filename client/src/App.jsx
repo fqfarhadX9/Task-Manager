@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyTasks from "./pages/MyTasks";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import TaskView from "./pages/TaskView";
 
 function App() {
   return (
@@ -19,6 +20,15 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }
+        />
+
+        <Route 
+         path="/task/:id" 
+         element={
+          <ProtectedRoute>
+            <TaskView />
+          </ProtectedRoute>
+         }
         />
 
         <Route

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "../api/axios";
 import AssignUsersModal from "./AssignUsersModel";
+import { useNavigate } from "react-router-dom";
 
 const TaskCard = ({ task, setTasks, setEditingTask, handleUnassign }) => {
   const [assignOpen, setAssignOpen] = useState(false);
+  const navigate = useNavigate();
 
   const updateStatus = async (newStatus) => {
     try {
@@ -124,6 +126,13 @@ const TaskCard = ({ task, setTasks, setEditingTask, handleUnassign }) => {
             setTasks={setTasks}
           />
         )}
+
+        <div
+          onClick={() => navigate(`/task/${task._id}`)}
+          className="cursor-pointer"
+        >
+          View Details
+        </div>
 
       </div>
     </div>

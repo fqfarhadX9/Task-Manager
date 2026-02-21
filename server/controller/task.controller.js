@@ -327,10 +327,14 @@ const updateTaskStatus = async (req, res) => {
     task.status = status;
     await task.save();
 
+    const updatedTask = await Task.findById(id)
+      .populate("assignedTo", "name email")
+      .populate("createdBy", "name email");
+
     res.status(200).json({
       success: true,
       message: "Task status updated",
-      task,
+      task: updatedTask,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
