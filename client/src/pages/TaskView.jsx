@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axios";
+import AssignUsersModal from "../components/AssignUsersModel";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -9,8 +10,9 @@ const TaskView = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
+  const [openAssign, setOpenAssign] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const isCreator =
     task?.createdBy?._id === user._id;
@@ -18,7 +20,7 @@ const TaskView = () => {
   const isAssigned =
     task?.assignedTo?.some(u => u._id === user._id);
 
-  const isAdmin = user.role === "admin";
+  const isAdmin = user?.role === "admin";
 
   const canChangeStatus = isAdmin || isCreator || isAssigned;
 
@@ -41,6 +43,21 @@ const TaskView = () => {
   const isOverdue =
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
+
+  const handleUnAssignTask = async (userId) => {
+      try {
+        const {data} = await axios.put(`/task/unassign/${id}`, {
+          userId
+        });
+        // setTask(data.task)
+        setTask(prev => ({
+          ...prev,
+          assignedTo: prev.assignedTo.filter(u => u._id !== userId)
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+  };
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
@@ -67,7 +84,6 @@ const TaskView = () => {
 
   const fetchComments = async () => {
     const { data } = await axios.get(`/comment/${id}`);
-    console.log("comments",data);
     setComments(data.comments);
   };
 
@@ -152,21 +168,48 @@ const TaskView = () => {
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-wider mb-2 text-gray-500">
-              Assigned To
-            </p>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs uppercase tracking-wider text-gray-500">
+                  Assigned To
+                </p>
+
+                {(isAdmin || isCreator) && (
+                  <button
+                    onClick={() => setOpenAssign(true)}
+                    className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-full transition"
+                  >
+                    + Assign
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="flex flex-wrap gap-2">
-              {task?.assignedTo?.map(user => (
-                <span
-                  key={user._id}
-                  className="bg-gray-700/60 border border-gray-600 px-3 py-1 rounded-full text-xs"
-                >
-                  {user?.name}
+              {task?.assignedTo?.length === 0 ? (
+                <span className="text-gray-500 text-xs italic">
+                  No users assigned
                 </span>
-              ))}
+              ) : (
+              task?.assignedTo?.map(user => (
+                <div
+                  key={user._id}
+                  className="flex items-center gap-2 bg-gray-700 px-3 py-1 rounded-full text-xs"
+                >
+                  <span>{user?.name}</span>
+
+                  {(isAdmin || isCreator) && (
+                    <button
+                      onClick={() => handleUnAssignTask(user._id)}
+                      className="text-red-400 hover:text-red-300 text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              )))}
             </div>
           </div>
-
         </div>
       </div>
 
@@ -224,6 +267,14 @@ const TaskView = () => {
       </div>
 
     </div>
+
+    {openAssign && (
+      <AssignUsersModal
+        task={task}
+        setOpen={setOpenAssign}
+        setTask={setTask}
+      />
+    )}
   </div>
 );
 };

@@ -1,81 +1,128 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../api/axios";
-import { AuthContext } from "../context/AuthContext";
 
-const AssignUsersModal = ({ task, setOpen, setTasks }) => {
+const AssignUsersModal = ({ task, setOpen, setTask, setTasks }) => {
   const [users, setUsers] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const {user} = useContext(AuthContext);
-  const currentUser = user
+  const user  = JSON.parse(localStorage.getItem("user") || "{}");
+  const currentUser = user;
 
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchUsers = async () => {
+    try {
       const { data } = await axios.get("/user");
       setUsers(data.users);
-      //already assigned users should be selected on the UI
-      setSelected(task.assignedTo.map(u => u._id) || []);
-    };
-    fetchUsers();
-  }, []);
-
-  const handleAssign = async () => {
-    try {
-      const { data } = await axios.put(`/task/assign/${task._id}`, {
-        userIds: selected
-      });
-
-      setTasks(prev =>
-        prev.map(t => t._id === data.task._id ? data.task : t)
-      );
-
-      setOpen(false);
     } catch (error) {
       console.error(error);
     }
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const toggleUser = (userId) => {
+    setSelectedUsers(prev =>
+      prev.includes(userId)
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleAssign = async () => {
+    if (selectedUsers.length === 0) return;
+
+    try {
+      setLoading(true);
+
+      const { data } = await axios.put(
+        `/task/assign/${task._id}`,
+        { userIds: selectedUsers }
+      );
+
+      if (setTask) setTask(data);
+      if (setTasks) {
+        setTasks(prev =>
+        prev.map(t => t._id === data.task._id ? data.task : t)
+        );
+      }
+      setOpen(false);
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const alreadyAssignedIds = task.assignedTo.map(u => u._id);
+
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-      <div className="bg-gray-900 p-6 rounded-xl w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Assign Users</h2>
-        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+
+      <div className="bg-gray-900 border border-gray-700 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+
+        <h2 className="text-lg font-semibold mb-4">
+          Assign Users
+        </h2>
+
+        <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
+
           {users
           .filter(u => u.role === "user" && u._id !== currentUser?._id) // don't show current user and admin in the list
-          .map(u => (
-            <label key={u._id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                value={u._id}
-                checked={selected.includes(u._id)}
-                onChange={e => {
-                  const val = e.target.value;
-                  setSelected(prev =>
-                    prev.includes(val)
-                      ? prev.filter(id => id !== val)
-                      : [...prev, val]
-                  );
-                }}
-              />
-              {u.name} ({u.email})
-            </label>
-          ))}
+          .map(user => {
+            const isAlreadyAssigned = alreadyAssignedIds.includes(user._id);
+
+            return (
+              <div
+                key={user._id}
+                onClick={() => !isAlreadyAssigned && toggleUser(user._id)}
+                className={`flex items-center justify-between px-4 py-2 rounded-lg cursor-pointer transition
+                ${
+                  isAlreadyAssigned
+                    ? "bg-gray-800 opacity-50 cursor-not-allowed"
+                    : selectedUsers.includes(user._id)
+                    ? "bg-blue-600/30 border border-blue-500"
+                    : "bg-gray-800 hover:bg-gray-700"
+                }`}
+              >
+                <span className="text-sm">{user.name}</span>
+
+                {isAlreadyAssigned ? (
+                  <span className="text-xs text-green-400">
+                    Assigned
+                  </span>
+                ) : selectedUsers.includes(user._id) ? (
+                  <span className="text-xs text-blue-400">
+                    Selected
+                  </span>
+                ) : null}
+              </div>
+            );
+          })}
+
         </div>
 
-        <div className="flex justify-end gap-3 mt-4">
+        <div className="flex justify-end gap-3">
+
           <button
             onClick={() => setOpen(false)}
-            className="text-gray-400"
+            className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg"
           >
             Cancel
           </button>
+
           <button
             onClick={handleAssign}
-            className="bg-white text-black px-4 py-2 rounded"
+            disabled={loading}
+            className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg disabled:opacity-50"
           >
-            Assign
+            {loading ? "Assigning..." : "Assign"}
           </button>
+
         </div>
+
       </div>
     </div>
   );
