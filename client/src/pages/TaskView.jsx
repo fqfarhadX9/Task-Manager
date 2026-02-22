@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "../api/axios";
 import AssignUsersModal from "../components/AssignUsersModel";
 import { formatDistanceToNow } from "date-fns";
+import { FaUserPlus, FaUserMinus } from "react-icons/fa";
+import { MdOutlineUpdate } from "react-icons/md";
+import { FaRegCommentDots } from "react-icons/fa";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -40,6 +43,21 @@ const TaskView = () => {
     };
     return colors[task.priority] || "bg-gray-600/20 text-gray-300";
   };
+
+  const getActivityIcon = (action) => {
+  switch (action) {
+    case "assigned":
+      return <FaUserPlus className="text-green-400" />;
+    case "unassigned":
+      return <FaUserMinus className="text-red-400" />;
+    case "status_changed":
+      return <MdOutlineUpdate className="text-blue-400" />;
+    case "comment_added":
+      return <FaRegCommentDots className="text-yellow-400" />;
+    default:
+      return null;
+  }
+};
 
   const isOverdue =
     task?.status !== "completed" &&
@@ -272,15 +290,20 @@ const TaskView = () => {
           </h3>
 
           <div className="flex flex-col gap-3">
-            {task?.activity?.length === 0 ? (
-              <p className="text-xs text-gray-500">No activity yet</p>
-            ) : (
-              task?.activity?.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-800 p-3 rounded-lg text-sm"
-                >
-                  <p className="text-gray-300">{item.message}</p>
+            {task.activity?.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-3 bg-gray-800 p-3 rounded-lg"
+              >
+                <div className="mt-1">
+                  {getActivityIcon(item.action)}
+                </div>
+
+                <div className="flex flex-col">
+                  <p className="text-gray-300 text-sm">
+                    {item.message}
+                  </p>
+
                   <span
                     title={new Date(item.createdAt).toLocaleString()}
                   >
@@ -289,8 +312,8 @@ const TaskView = () => {
                     })}
                   </span>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
