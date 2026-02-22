@@ -642,6 +642,74 @@ const toggleTodo = async (req, res) => {
   }
 };
 
+const deleteTodo = async (req, res) => {
+  try {
+    const { taskId, todoId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAssigned = task.assignedTo.some(
+      uid => uid.toString() === req.user._id.toString()
+    );
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isCreator && !isAssigned && !isAdmin) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    const todo = task.todoChecklist.id(todoId);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    todo.deleteOne(); 
+
+    const total = task.todoChecklist.length;
+    const completed = task.todoChecklist.filter(t => t.completed).length;
+
+    const newProgress =
+      total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    task.progress = newProgress;
+
+    if (newProgress === 0) {
+      task.status = "pending";
+    } else if (newProgress < 100) {
+      task.status = "in_progress";
+    } else {
+      task.status = "completed";
+    }
+
+    task.activity.push({
+      action: "todo_deleted",
+      message: `${req.user.name} deleted a todo`,
+      performedBy: req.user._id,
+    });
+
+    await task.save();
+
+    const updatedTask = await Task.findById(taskId)
+      .populate("assignedTo", "name email")
+      .populate("createdBy", "name");
+
+    res.status(200).json({
+      success: true,
+      task: updatedTask,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTask,
   getMyTasks,
@@ -656,4 +724,5 @@ module.exports = {
   updateProgress,
   addTodo,
   toggleTodo,
+  deleteTodo,
 };

@@ -17,6 +17,7 @@ const {
   updateProgress,
   addTodo,
   toggleTodo,
+  deleteTodo,
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
@@ -32,5 +33,6 @@ router.get("/:id", protect, getSingleTask);
 router.put("/progress/:id", protect, updateProgress);
 router.post("/todo/:id", protect, addTodo);
 router.put("/todo/:taskId/:todoId", protect, toggleTodo);
+router.delete("/todo/:taskId/:todoId", protect, deleteTodo);
 
 module.exports = router;
