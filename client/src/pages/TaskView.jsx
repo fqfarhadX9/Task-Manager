@@ -16,6 +16,7 @@ const TaskView = () => {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [openAssign, setOpenAssign] = useState(false);
+  const [newTodo, setNewTodo] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -46,32 +47,62 @@ const TaskView = () => {
   };
 
   const getActivityIcon = (action) => {
-  switch (action) {
-    case "assigned":
-      return <FaUserPlus className="text-green-400" />;
-    case "unassigned":
-      return <FaUserMinus className="text-red-400" />;
-    case "status_changed":
-      return <MdOutlineUpdate className="text-blue-400" />;
-    case "comment_added":
-      return <FaRegCommentDots className="text-yellow-400" />;
-    default:
-      return null;
-  }
-};
+    switch (action) {
+      case "assigned":
+        return <FaUserPlus className="text-green-400" />;
+      case "unassigned":
+        return <FaUserMinus className="text-red-400" />;
+      case "status_changed":
+        return <MdOutlineUpdate className="text-blue-400" />;
+      case "comment_added":
+        return <FaRegCommentDots className="text-yellow-400" />;
+      default:
+        return null;
+    }
+  };
 
   const isOverdue =
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
 
-  const handleProgressChange = async (newValue) => {
+  
+  const handleDeleteTodo = async (todoId) => {
     try {
-      const { data } = await axios.put(
-        `/task/progress/${id}`,
-        { progress: newValue }
+      const { data } = await axios.delete(
+        `/task/todo/${id}/${todoId}`
       );
 
       setTask(data.task);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleToggleTodo = async (todoId) => {
+    try {
+      const { data } = await axios.put(
+        `/task/todo/${id}/${todoId}`
+      );
+
+      setTask(data.task);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleAddTodo = async () => {
+    if (!newTodo.trim()) return;
+
+    try {
+      const { data } = await axios.post(
+        `/task/todo/${id}`,
+        { text: newTodo }
+      );
+
+      setTask(data.task);
+      setNewTodo("");
 
     } catch (error) {
       console.error(error.response?.data?.message);
@@ -145,22 +176,6 @@ const TaskView = () => {
 
      <div className="space-y-3">
         <ProgressBar value={task.progress} />
-
-        {(isAdmin || isCreator || isAssigned) && (
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={task.progress}
-            onChange={(e) =>
-              setTask(prev => ({ ...prev, progress: Number(e.target.value) }))
-            }
-            onMouseUp={(e) =>
-              handleProgressChange(Number(e.target.value))
-            }
-            className="w-full accent-blue-500 cursor-pointer"
-          />
-        )}
       </div>
 
       {/* HEADER CARD */}
@@ -275,6 +290,71 @@ const TaskView = () => {
         <p className="text-gray-300 leading-relaxed text-[15px]">
           {task?.description}
         </p>
+      </div>
+
+    {/* TODO SECTION */}
+    <div className="bg-gray-800/60 border border-gray-700 p-8 rounded-3xl shadow-xl">
+
+      <h2 className="text-xl font-semibold mb-6 tracking-tight">
+        Checklist
+      </h2>
+
+      <div className="flex gap-3 mb-6">
+        <input
+          type="text"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          placeholder="Add a todo..."
+          className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:border-blue-500 transition"
+        />
+        <button
+          onClick={handleAddTodo}
+          className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-medium transition"
+        >
+          Add
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {task?.todoChecklist?.length === 0 ? (
+          <p className="text-gray-500 text-sm italic">
+            No todos yet
+          </p>
+        ) : (
+          task.todoChecklist.map(todo => (
+            <div
+              key={todo._id}
+              className="flex items-center justify-between bg-gray-900/60 border border-gray-700 p-4 rounded-xl"
+            >
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => handleToggleTodo(todo._id)}
+                className="w-4 h-4 accent-blue-500 cursor-pointer"
+              />
+
+              <span
+                className={`text-sm ${
+                  todo.completed
+                    ? "line-through text-gray-500"
+                    : "text-gray-200"
+                }`}
+              >
+                {todo.text}
+              </span>
+              </div>
+
+                <button
+                  onClick={() => handleDeleteTodo(todo._id)}
+                  className="text-red-400 hover:text-red-300 text-sm"
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* COMMENTS */}
