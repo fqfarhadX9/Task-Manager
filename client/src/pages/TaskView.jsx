@@ -2,11 +2,18 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axios";
 import AssignUsersModal from "../components/AssignUsersModel";
-import { formatDistanceToNow } from "date-fns";
-import { FaUserPlus, FaUserMinus } from "react-icons/fa";
-import { MdOutlineUpdate } from "react-icons/md";
-import { FaRegCommentDots } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
+import Navbar from "../components/Navbar";
+import { formatDistanceToNow } from "date-fns";
+import { MdOutlineUpdate } from "react-icons/md";
+import { 
+  FaUserPlus, 
+  FaUserMinus,
+  FaRegCommentDots, 
+  FaPlusCircle,
+  FaCheckCircle,
+  FaTrash,
+  } from "react-icons/fa";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -56,14 +63,23 @@ const TaskView = () => {
         return <MdOutlineUpdate className="text-blue-400" />;
       case "comment_added":
         return <FaRegCommentDots className="text-yellow-400" />;
+      case "todo_added":
+        return <FaPlusCircle className="text-blue-400" />;
+      case "todo_toggled":
+        return <FaCheckCircle className="text-green-400" />;
+      case "todo_deleted":
+        return <FaTrash className="text-red-400" />;
       default:
-        return null;
+      return null;
     }
   };
 
   const isOverdue =
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
+
+  const totalTodos = task?.todoChecklist?.length || 0;
+  const completedTodos = task?.todoChecklist?.filter(t => t.completed).length || 0;
 
   
   const handleDeleteTodo = async (todoId) => {
@@ -142,7 +158,6 @@ const TaskView = () => {
 
   const fetchTask = async () => {
     const { data } = await axios.get(`/task/${id}`);
-    console.log(data);
     setTask(data.task);
     setLoading(false);
   };
@@ -243,7 +258,7 @@ const TaskView = () => {
                   Assigned To
                 </p>
 
-                {(isAdmin || isCreator) && (
+                {(isAdmin || isCreator || isAssigned) && (
                   <button
                     onClick={() => setOpenAssign(true)}
                     className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-full transition"
@@ -295,10 +310,23 @@ const TaskView = () => {
     {/* TODO SECTION */}
     <div className="bg-gray-800/60 border border-gray-700 p-8 rounded-3xl shadow-xl">
 
-      <h2 className="text-xl font-semibold mb-6 tracking-tight">
-        Checklist
-      </h2>
+      <div className="flex items-center justify-between mb-6">
+        {task?.status === "completed" && (
+          <div className="mb-4 inline-block bg-green-600/20 text-green-400 px-4 py-2 rounded-xl text-sm font-medium">
+            Task Completed 🎉
+          </div>
+        )}
+        <h2 className="text-xl font-semibold mb-6 tracking-tight">
+          Checklist
+        </h2>
 
+        {totalTodos > 0 && (
+          <span className="text-sm text-gray-400">
+            {completedTodos} of {totalTodos} completed
+          </span>
+        )}
+
+      </div>
       <div className="flex gap-3 mb-6">
         <input
           type="text"
@@ -307,12 +335,18 @@ const TaskView = () => {
           placeholder="Add a todo..."
           className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:border-blue-500 transition"
         />
-        <button
+       <button
           onClick={handleAddTodo}
-          className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-medium transition"
+          disabled={task?.status === "completed"}
+          className={`px-6 py-3 rounded-xl font-medium transition
+            ${
+              task?.status === "completed"
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-500"
+            }`}
         >
           Add
-        </button>
+      </button>
       </div>
 
       <div className="space-y-3">
@@ -397,6 +431,7 @@ const TaskView = () => {
             </div>
           ))}
         </div>
+      </div>
        
         {/*Activity Log*/}
         <div className="mt-8">
@@ -431,7 +466,6 @@ const TaskView = () => {
             ))}
           </div>
         </div>
-      </div>
     </div>
 
     {openAssign && (
