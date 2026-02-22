@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
 import { MdOutlineUpdate } from "react-icons/md";
 import { FaRegCommentDots } from "react-icons/fa";
+import ProgressBar from "../components/ProgressBar";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -62,6 +63,20 @@ const TaskView = () => {
   const isOverdue =
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
+
+  const handleProgressChange = async (newValue) => {
+    try {
+      const { data } = await axios.put(
+        `/task/progress/${id}`,
+        { progress: newValue }
+      );
+
+      setTask(data.task);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };  
 
   const handleUnAssignTask = async (userId) => {
       try {
@@ -127,6 +142,26 @@ const TaskView = () => {
  return (
   <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 py-12 px-6">
     <div className="max-w-4xl mx-auto space-y-10">
+
+     <div className="space-y-3">
+        <ProgressBar value={task.progress} />
+
+        {(isAdmin || isCreator || isAssigned) && (
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={task.progress}
+            onChange={(e) =>
+              setTask(prev => ({ ...prev, progress: Number(e.target.value) }))
+            }
+            onMouseUp={(e) =>
+              handleProgressChange(Number(e.target.value))
+            }
+            className="w-full accent-blue-500 cursor-pointer"
+          />
+        )}
+      </div>
 
       {/* HEADER CARD */}
       <div className="bg-gray-800/60 backdrop-blur-xl border border-gray-700 p-10 rounded-3xl shadow-2xl shadow-black/30">

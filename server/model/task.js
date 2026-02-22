@@ -38,19 +38,24 @@ const taskSchema = new mongoose.Schema(
     },
 
     activity: [
-    {
+     {
       action: String,        // "assigned", "status_changed", etc
       message: String,       // readable message
       performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       createdAt: { type: Date, default: Date.now }
-    }
-   ],
+     }
+    ],
+
+    progress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
 
     attachments: [String],
 
     todoChecklist: [todoSchema],
-
-    progress: { type: Number, default: 0 },
 
     isDeleted: { type: Boolean, default: false },
   },

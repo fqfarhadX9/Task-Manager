@@ -417,6 +417,89 @@ const getSingleTask = async (req, res) => {
   }
 };
 
+const updateProgress = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { progress } = req.body;
+
+    if (progress === undefined) {
+      return res.status(400).json({ message: "Progress value required" });
+    }
+
+    if (progress < 0 || progress > 100) {
+      return res.status(400).json({ message: "Progress must be between 0 and 100" });
+    }
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAdmin = req.user.role === "admin";
+
+    const isAssigned = task.assignedTo.some(
+      uid => uid.toString() === req.user._id.toString()
+    );
+
+    if (!isAdmin && !isCreator && !isAssigned) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    const oldProgress = task.progress;
+    const oldStatus = task.status;
+
+    if (oldProgress === progress) {
+      return res.status(400).json({ message: "Progress already set to this value" });
+    }
+
+    task.progress = progress;
+
+    task.activity.push({
+      action: "progress_updated",
+      message: `${req.user.name} updated progress from ${oldProgress}% to ${progress}%`,
+      performedBy: req.user._id,
+    });
+
+    if (progress === 100 && oldStatus !== "completed") {
+      task.status = "completed";
+
+      task.activity.push({
+        action: "status_changed",
+        message: `${req.user.name} marked task as completed`,
+        performedBy: req.user._id,
+      });
+    }
+
+    if (progress < 100 && oldStatus === "completed") {
+      task.status = "in_progress";
+
+      task.activity.push({
+        action: "status_changed",
+        message: `${req.user.name} moved task back to In Progress`,
+        performedBy: req.user._id,
+      });
+    }
+
+    await task.save();
+
+    const updatedTask = await Task.findById(id)
+      .populate("assignedTo", "name email")
+      .populate("activity.performedBy", "name");
+
+    res.status(200).json({
+      success: true,
+      message: "Progress updated successfully",
+      task: updatedTask,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createTask,
@@ -429,4 +512,5 @@ module.exports = {
   getAssignedTasks,
   updateTaskStatus,
   getSingleTask,
+  updateProgress,
 };
