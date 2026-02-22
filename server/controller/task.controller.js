@@ -83,6 +83,17 @@ const assignTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
+    
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAdmin && !isCreator) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    let newlyAssignedCount = 0;
 
     userIds.forEach(userId => {
       const alreadyAssigned = task.assignedTo.some(
@@ -91,13 +102,23 @@ const assignTask = async (req, res) => {
 
       if (!alreadyAssigned) {
         task.assignedTo.push(userId);
+        newlyAssignedCount++;
       }
+    });
+
+    task.activity.push({
+      action: "assigned",
+      message: `${req.user.name} assigned ${
+      newlyAssignedCount === 1 ? "1 user" : `${newlyAssignedCount} users`
+      }`,
+      performedBy: req.user._id,
     });
 
     await task.save();
 
     const updatedTask = await Task.findById(id)
-      .populate("assignedTo", "name email");
+      .populate("assignedTo", "name email")
+      .populate("activity.performedBy", "name");
 
     res.status(200).json({
       success: true,
@@ -111,7 +132,7 @@ const assignTask = async (req, res) => {
 
 const unassignTask = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const { userId } = req.body;
 
     if (!userId) {
@@ -133,14 +154,29 @@ const unassignTask = async (req, res) => {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    task.assignedTo = task.assignedTo.filter(
-      assignedId => assignedId.toString() !== userId.toString()
+    const targetIsAssigned = task.assignedTo.some(
+      id => id.toString() === userId.toString()
     );
+
+    if (!targetIsAssigned) {
+      return res.status(400).json({ message: "User not assigned to this task" });
+    }
+
+    task.assignedTo = task.assignedTo.filter(
+      id => id.toString() !== userId.toString()
+    );
+
+    task.activity.push({
+      action: "unassigned",
+      message: `${req.user.name} unassigned 1 user`,
+      performedBy: req.user._id,
+    });
 
     await task.save();
 
     const updatedTask = await Task.findById(id)
-      .populate("assignedTo", "name email");
+      .populate("assignedTo", "name email")
+      .populate("activity.performedBy", "name");
 
     res.status(200).json({
       success: true,
@@ -325,11 +361,18 @@ const updateTaskStatus = async (req, res) => {
     }
 
     task.status = status;
+    task.activity.push({
+      action: "status_changed",
+      message: `${req.user.name} changed status to ${task.status}`,
+      performedBy: req.user._id
+    });
+
     await task.save();
 
     const updatedTask = await Task.findById(id)
       .populate("assignedTo", "name email")
-      .populate("createdBy", "name email");
+      .populate("createdBy", "name email")
+      .populate("activity.performedBy", "name");
 
     res.status(200).json({
       success: true,

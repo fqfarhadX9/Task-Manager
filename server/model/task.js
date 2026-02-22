@@ -37,6 +37,15 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
+    activity: [
+    {
+      action: String,        // "assigned", "status_changed", etc
+      message: String,       // readable message
+      performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      createdAt: { type: Date, default: Date.now }
+    }
+   ],
+
     attachments: [String],
 
     todoChecklist: [todoSchema],

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axios";
 import AssignUsersModal from "../components/AssignUsersModel";
+import { formatDistanceToNow } from "date-fns";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -263,9 +264,36 @@ const TaskView = () => {
             </div>
           ))}
         </div>
+       
+        {/*Activity Log*/}
+        <div className="mt-8">
+          <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-3">
+            Activity
+          </h3>
 
+          <div className="flex flex-col gap-3">
+            {task?.activity?.length === 0 ? (
+              <p className="text-xs text-gray-500">No activity yet</p>
+            ) : (
+              task?.activity?.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-800 p-3 rounded-lg text-sm"
+                >
+                  <p className="text-gray-300">{item.message}</p>
+                  <span
+                    title={new Date(item.createdAt).toLocaleString()}
+                  >
+                    {formatDistanceToNow(new Date(item.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
-
     </div>
 
     {openAssign && (
