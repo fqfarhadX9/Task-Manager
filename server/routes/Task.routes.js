@@ -19,8 +19,8 @@ const {
   deleteTodo,
   createSubtask,
   toggleSubtaskTodo,
-  addSubtaskTodo,
-  deleteSubtaskTodo,
+  updateSubtask,
+  deleteSubtask,
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
@@ -40,5 +40,7 @@ router.post("/subtask/:taskId", protect, createSubtask);
 router.put("/subtask/:taskId/:subtaskId/todo/:todoId", protect, toggleSubtaskTodo);
 router.post("/subtask/:taskId/:subtaskId/todo", protect, addSubtaskTodo);
 router.delete("/subtask/:taskId/:subtaskId/todo/:todoId", protect, deleteSubtaskTodo);
+router.put("/subtask/:taskId/:subtaskId", protect, updateSubtask);
+router.delete("/subtask/:taskId/:subtaskId", protect, deleteSubtask);
 
 module.exports = router;

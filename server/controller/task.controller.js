@@ -770,6 +770,101 @@ const deleteSubtaskTodo = async (req, res) => {
   }
 };
 
+const updateSubtask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.params;
+    const { title, description } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to update this subtask",
+      });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+
+    if (!subtask) {
+      return res.status(404).json({ message: "Subtask not found" });
+    }
+
+    if (title && title.trim()) {
+      subtask.title = title.trim();
+    }
+
+    if (description && description.trim()) {
+      subtask.description = description.trim();
+    }
+
+    task.activity.push({
+      action: "subtask_updated",
+      message: `Subtask "${subtask.title}" updated`,
+      performedBy: req.user._id,
+    });
+
+    await task.save();
+
+    res.json({
+      success: true,
+      task,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteSubtask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this subtask",
+      });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+
+    if (!subtask) {
+      return res.status(404).json({ message: "Subtask not found" });
+    }
+
+    const subtaskTitle = subtask.title;
+
+    task.subtasks.pull(subtaskId);
+
+    updateTaskProgress(task);
+
+    task.activity.push({
+      action: "subtask_deleted",
+      message: `Subtask "${subtaskTitle}" deleted`,
+      performedBy: req.user._id,
+    });
+
+    await task.save();
+
+    res.json({
+      success: true,
+      task,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTask,
   getMyTasks,
@@ -788,4 +883,6 @@ module.exports = {
   toggleSubtaskTodo,
   addSubtaskTodo,
   deleteSubtaskTodo,
+  updateSubtask,
+  deleteSubtask
 };
