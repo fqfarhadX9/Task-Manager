@@ -5,6 +5,35 @@ const todoSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false },
 });
 
+const SubtaskSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      trim: true,
+    },
+
+    todoChecklist: [todoSchema],
+
+    progress: {
+      type: Number,
+      default: 0,
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "in_progress", "completed"],
+      default: "pending",
+    },
+  },
+  { timestamps: true }
+);
+
 const taskSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -55,42 +84,14 @@ const taskSchema = new mongoose.Schema(
 
     attachments: [String],
 
+    subtasks: [SubtaskSchema],
+
     todoChecklist: [todoSchema],
 
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
-
-// auto progress calculation
-taskSchema.pre("save", function () {
-  if (!this.isModified("todoChecklist")) {
-    return;
-  }
-
-  if (this.todoChecklist.length === 0) {
-    this.progress = 0;
-    this.status = "pending";
-    return;
-  }
-
-  const completedCount = this.todoChecklist.filter(
-    (todo) => todo.completed
-  ).length;
-
-  this.progress = Math.round(
-    (completedCount / this.todoChecklist.length) * 100
-  );
-
-  if (this.progress === 100) {
-    this.status = "completed";
-  } else if (this.progress > 0) {
-    this.status = "in_progress";
-  } else {
-    this.status = "pending";
-  }
-});
-
 
 const Task = mongoose.model("Task", taskSchema);
 module.exports = Task

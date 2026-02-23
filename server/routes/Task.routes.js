@@ -14,7 +14,6 @@ const {
   updateTaskStatus,
   unassignTask,
   getSingleTask,
-  updateProgress,
   addTodo,
   toggleTodo,
   deleteTodo,
@@ -30,7 +29,6 @@ router.get("/", protect, isAdmin, getAllTasks);
 router.get("/assigned", protect, getAssignedTasks);
 router.put("/status/:id", protect, updateTaskStatus);
 router.get("/:id", protect, getSingleTask);
-router.put("/progress/:id", protect, updateProgress);
 router.post("/todo/:id", protect, addTodo);
 router.put("/todo/:taskId/:todoId", protect, toggleTodo);
 router.delete("/todo/:taskId/:todoId", protect, deleteTodo);
