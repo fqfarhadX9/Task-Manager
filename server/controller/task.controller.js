@@ -1,6 +1,6 @@
 const Task = require("../model/task.js");
-const calculateTaskProgress = require("../utils/calculateTaskProgress.js");
-const { updateSubtaskProgress, updateTaskProgress } = require("../utils/progressUtils");
+const { canModifyTask } = require("../utils/permissionUtils.js");
+const { updateSubtaskProgress, updateTaskProgress } = require("../utils/progressUtils.js");
 
 const createTask = async (req, res) => {
   try {
@@ -199,17 +199,10 @@ const updateTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isAssigned = task.assignedTo.some(
-      (id) => id.toString() === req.user._id.toString()
-    );
-
-    const isCreator =
-      task.createdBy.toString() === req.user._id.toString();
-
-    const isAdmin = req.user.role === "admin";
-
-    if (!isAssigned && !isAdmin && !isCreator) {
-      return res.status(403).json({ message: "Not allowed" });
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to modify this task",
+      });
     }
 
     // Jo fields frontend se aaya.. Wahi task me update
@@ -349,20 +342,14 @@ const updateTaskStatus = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isAssigned = task.assignedTo.some(
-      (id) => id.toString() === req.user._id.toString()
-    );
-
-    const isCreator =
-      task.createdBy.toString() === req.user._id.toString();
-
-    const isAdmin = req.user.role === "admin";
-
-    if (!isAssigned && !isAdmin && !isCreator) {
-      return res.status(403).json({ message: "Not allowed" });
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this task",
+      });
     }
 
     task.status = status;
+
     task.activity.push({
       action: "status_changed",
       message: `${req.user.name} changed status to ${task.status}`,
@@ -434,26 +421,17 @@ const addTodo = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isCreator =
-      task.createdBy.toString() === req.user._id.toString();
-
-    const isAssigned = task.assignedTo.some(
-      uid => uid.toString() === req.user._id.toString()
-    );
-
-    const isAdmin = req.user.role === "admin";
-
-    if (!isCreator && !isAssigned && !isAdmin) {
-      return res.status(403).json({ message: "Not allowed" });
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to add todo to this task",
+      });
     }
 
     task.todoChecklist.push({
       text: text.trim(),
     });
 
-    const {progress, status} = calculateTaskProgress(task)
-    task.progress = progress;
-    task.status = status;
+    updateTaskProgress(task);
 
     task.activity.push({
       action: "todo_added",
@@ -487,18 +465,11 @@ const toggleTodo = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isCreator =
-      task.createdBy.toString() === req.user._id.toString();
-
-    const isAssigned = task.assignedTo.some(
-      uid => uid.toString() === req.user._id.toString()
-    );
-
-    const isAdmin = req.user.role === "admin";
-
-    if (!isCreator && !isAssigned && !isAdmin) {
-      return res.status(403).json({ message: "Not allowed" });
-    }
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to modify this todo",
+  });
+}
 
     const todo = task.todoChecklist.id(todoId);
 
@@ -508,9 +479,7 @@ const toggleTodo = async (req, res) => {
 
     todo.completed = !todo.completed;
 
-    const {progress, status} = calculateTaskProgress(task)
-    task.progress = progress;
-    task.status = status;
+    updateTaskProgress(task);
 
     task.activity.push({
       action: "todo_toggled",
@@ -546,17 +515,10 @@ const deleteTodo = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isCreator =
-      task.createdBy.toString() === req.user._id.toString();
-
-    const isAssigned = task.assignedTo.some(
-      uid => uid.toString() === req.user._id.toString()
-    );
-
-    const isAdmin = req.user.role === "admin";
-
-    if (!isCreator && !isAssigned && !isAdmin) {
-      return res.status(403).json({ message: "Not allowed" });
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this todo",
+      });
     }
 
     const todo = task.todoChecklist.id(todoId);
@@ -566,9 +528,7 @@ const deleteTodo = async (req, res) => {
 
     todo.deleteOne(); 
 
-    const {progress, status} = calculateTaskProgress(task)
-    task.progress = progress;
-    task.status = status;
+    updateTaskProgress(task);
 
     task.activity.push({
       action: "todo_deleted",
@@ -605,6 +565,12 @@ const createSubtask = async (req, res) => {
 
     if (!title || !title.trim() || !description || !description.trim() || !todos || !Array.isArray(todos)) {
       return res.status(400).json({ message: "Subtask title, description, and todos are required" });
+    }
+
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to create subtask",
+      });
     }
 
     const newSubtask = {
@@ -667,6 +633,12 @@ const toggleSubtaskTodo = async (req, res) => {
       return res.status(404).json({ message: "Todo not found" });
     }
 
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to toggle this subtask",
+      });
+    }
+
     todo.completed = !todo.completed;
 
     updateSubtaskProgress(subtask);
@@ -709,6 +681,12 @@ const addSubtaskTodo = async (req, res) => {
 
     if (!text || text.trim() === "") {
       return res.status(400).json({ message: "Todo text is required" });
+    }
+
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to add todo to this subtask",
+      });
     }
 
     const newTodo = {
@@ -758,6 +736,12 @@ const deleteSubtaskTodo = async (req, res) => {
     const todo = subtask.todoChecklist.id(todoId);
     if (!todo) {
       return res.status(404).json({ message: "Todo not found" });
+    }
+
+    if (!canModifyTask(task, req.user)) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this subtask todo",
+      });
     }
 
     const deletedText = todo.text;

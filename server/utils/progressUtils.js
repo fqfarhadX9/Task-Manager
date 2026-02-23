@@ -58,6 +58,7 @@ const updateTaskProgress = (task) => {
   }
 };
 
+
 module.exports = {
   updateSubtaskProgress,
   updateTaskProgress,
