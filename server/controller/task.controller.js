@@ -592,6 +592,200 @@ const deleteTodo = async (req, res) => {
   }
 };
 
+const createSubtask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { title, description, todos } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (!title || !title.trim() || !description || !description.trim() || !todos || !Array.isArray(todos)) {
+      return res.status(400).json({ message: "Subtask title, description, and todos are required" });
+    }
+
+    const newSubtask = {
+      title,
+      description,
+      todoChecklist: todos?.map(text => ({
+        text,
+        completed: false
+      })) || [],
+      progress: 0,
+      status: "pending"
+    };
+
+    task.subtasks.push(newSubtask);
+
+    // Get reference of newly added subtask
+    const addedSubtask = task.subtasks[task.subtasks.length - 1];
+
+    // Update subtask progress
+    updateSubtaskProgress(addedSubtask);
+
+    // Update parent task progress
+    updateTaskProgress(task);
+
+    task.activity.push({
+      action: "subtask_created",
+      message: `Subtask "${title}" created`,
+      performedBy: req.user._id
+    });
+
+    await task.save();
+
+    res.status(201).json({
+      message: "Subtask created successfully",
+      task
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const toggleSubtaskTodo = async (req, res) => {
+  try {
+    const { taskId, subtaskId, todoId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ message: "Subtask not found" });
+    }
+
+    const todo = subtask.todoChecklist.id(todoId);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    todo.completed = !todo.completed;
+
+    updateSubtaskProgress(subtask);
+
+    updateTaskProgress(task);
+
+    task.activity.push({
+      action: "subtask_todo_toggled",
+      message: `Todo "${todo.text}" marked as ${todo.completed ? "completed" : "pending"}`,
+      performedBy: req.user._id
+    });
+
+    await task.save();
+
+    res.json({
+      message: "Subtask todo updated successfully",
+      task
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const addSubtaskTodo = async (req, res) => {
+  try {
+    const { taskId, subtaskId} = req.params;
+    const { text } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ message: "Subtask not found" });
+    }
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ message: "Todo text is required" });
+    }
+
+    const newTodo = {
+      text,
+      completed: false
+    };
+
+    subtask.todoChecklist.push(newTodo);
+
+    updateSubtaskProgress(subtask);
+
+    updateTaskProgress(task);
+
+    task.activity.push({
+      action: "subtask_todo_added",
+      message: `Todo "${newTodo.text}" added to subtask`,
+      performedBy: req.user._id
+    });
+
+    await task.save();
+
+    res.json({
+      message: "Subtask todo added successfully",
+      task
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteSubtaskTodo = async (req, res) => {
+  try {
+    const { taskId, subtaskId, todoId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ message: "Subtask not found" });
+    }
+
+    const todo = subtask.todoChecklist.id(todoId);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    const deletedText = todo.text;
+
+    subtask.todoChecklist.pull(todoId);
+
+    updateSubtaskProgress(subtask);
+
+    updateTaskProgress(task);
+
+    task.activity.push({
+      action: "subtask_todo_deleted",
+      message: `Todo "${deletedText}" deleted from subtask`,
+      performedBy: req.user._id
+    });
+
+    await task.save();
+
+    res.json({
+      message: "Todo deleted successfully",
+      task
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTask,
   getMyTasks,
@@ -606,4 +800,8 @@ module.exports = {
   addTodo,
   toggleTodo,
   deleteTodo,
+  createSubtask,
+  toggleSubtaskTodo,
+  addSubtaskTodo,
+  deleteSubtaskTodo,
 };
