@@ -40,7 +40,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-black text-white px-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 px-4">
       <div className="w-full max-w-md flex flex-col gap-6">
 
         <h1 className="text-3xl font-bold">
@@ -66,8 +66,8 @@ const Signup = () => {
           <input
             type="text"
             placeholder="Name"
-            className="w-full bg-black border border-gray-700 rounded-md 
-                       px-4 py-3 focus:outline-none focus:border-blue-500"
+            className="w-full bg-gray-700/60 border border-gray-600 rounded-md 
+                       px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -75,8 +75,8 @@ const Signup = () => {
           <input
             type="email"
             placeholder="Email"
-            className="w-full bg-black border border-gray-700 rounded-md 
-                       px-4 py-3 focus:outline-none focus:border-blue-500"
+            className="w-full bg-gray-700/60 border border-gray-600 rounded-md 
+                       px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -84,8 +84,8 @@ const Signup = () => {
           <input
             type="password"
             placeholder="Password"
-            className="w-full bg-black border border-gray-700 rounded-md 
-                       px-4 py-3 focus:outline-none focus:border-blue-500"
+            className="w-full bg-gray-700/60 border border-gray-600 rounded-md 
+                       px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -93,8 +93,8 @@ const Signup = () => {
           <input
             type="text"
             placeholder="Admin join code (optional)"
-            className="w-full bg-black border border-gray-700 rounded-md 
-            px-4 py-3 focus:outline-none focus:border-blue-500"
+            className="w-full bg-gray-700/60 border border-gray-600 rounded-md 
+            px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
             value={adminJoinCode}
             onChange={(e) => setAdminJoinCode(e.target.value)}
          />
