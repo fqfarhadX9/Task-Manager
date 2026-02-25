@@ -5,15 +5,8 @@ import AssignUsersModal from "../components/AssignUsersModel";
 import ProgressBar from "../components/ProgressBar";
 import Navbar from "../components/Navbar";
 import { formatDistanceToNow } from "date-fns";
-import { MdOutlineUpdate } from "react-icons/md";
-import { 
-  FaUserPlus, 
-  FaUserMinus,
-  FaRegCommentDots, 
-  FaPlusCircle,
-  FaCheckCircle,
-  FaTrash,
-  } from "react-icons/fa";
+import SubtaskSection from "../components/SubtaskSection";
+import TodoSection from "../components/TodoSection";
 
 const TaskView = () => {
   const { id } = useParams();
@@ -24,6 +17,18 @@ const TaskView = () => {
   const [commentText, setCommentText] = useState("");
   const [openAssign, setOpenAssign] = useState(false);
   const [newTodo, setNewTodo] = useState("");
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+  const [newSubtaskDesc, setNewSubtaskDesc] = useState("");
+  const [subtaskInput, setSubtaskInput] = useState({});
+  const [editingSubtaskId, setEditingSubtaskId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+
+  const handleEditSubtask = (subtask) => {
+    setEditingSubtaskId(subtask._id);
+    setEditTitle(subtask.title);
+    setEditDesc(subtask.description);
+  };
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -35,7 +40,7 @@ const TaskView = () => {
 
   const isAdmin = user?.role === "admin";
 
-  const canChangeStatus = isAdmin || isCreator || isAssigned;
+  // const canChangeStatus = isAdmin || isCreator || isAssigned;
 
   const getStatusColor = () => {
     if (task.status === "completed")
@@ -53,34 +58,113 @@ const TaskView = () => {
     return colors[task.priority] || "bg-gray-600/20 text-gray-300";
   };
 
-  const getActivityIcon = (action) => {
-    switch (action) {
-      case "assigned":
-        return <FaUserPlus className="text-green-400" />;
-      case "unassigned":
-        return <FaUserMinus className="text-red-400" />;
-      case "status_changed":
-        return <MdOutlineUpdate className="text-blue-400" />;
-      case "comment_added":
-        return <FaRegCommentDots className="text-yellow-400" />;
-      case "todo_added":
-        return <FaPlusCircle className="text-blue-400" />;
-      case "todo_toggled":
-        return <FaCheckCircle className="text-green-400" />;
-      case "todo_deleted":
-        return <FaTrash className="text-red-400" />;
-      default:
-      return null;
-    }
-  };
-
   const isOverdue =
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
 
-  const totalTodos = task?.todoChecklist?.length || 0;
+
   const completedTodos = task?.todoChecklist?.filter(t => t.completed).length || 0;
 
+  const handleDeleteSubtaskTodo = async (subtaskId, todoId) => {
+    try {
+      const { data } = await axios.delete(
+        `/task/${id}/subtask/${subtaskId}/todo/${todoId}`
+      );
+
+      setTask(data.task);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleToggleSubtaskTodo = async (subtaskId, todoId) => {
+    try {
+      const { data } = await axios.put(
+        `/task/${id}/subtask/${subtaskId}/todo/${todoId}`
+      );
+
+      setTask(data.task);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleAddSubtaskTodo = async (subtaskId) => {
+    const text = subtaskInput[subtaskId];
+    if (!text?.trim()) return;
+
+    try {
+      const { data } = await axios.post(
+        `/task/${id}/subtask/${subtaskId}/todo`,
+        { text }
+      );
+      console.log("todo data", data);
+
+      setTask({...data.task});
+
+      setSubtaskInput({
+        ...subtaskInput,
+        [subtaskId]: ""
+      });
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleUpdateSubtask = async (subtaskId) => {
+    try {
+      const { data } = await axios.put(
+        `/task/${id}/subtask/${subtaskId}`,
+        {
+          title: editTitle,
+          description: editDesc
+        }
+      );
+
+      setTask(data.task);
+      setEditingSubtaskId(null);
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleDeleteSubtask = async (subtaskId) => {
+    try {
+      const { data } = await axios.delete(
+        `/task/${id}/subtask/${subtaskId}`
+      );
+
+      setTask(data.task);
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
+
+  const handleCreateSubtask = async () => {
+    if (!newSubtaskTitle.trim() || !newSubtaskDesc.trim()) return;
+
+    try {
+      const { data } = await axios.post(
+        `/task/${id}/subtask`,
+        {
+          title: newSubtaskTitle,
+          description: newSubtaskDesc,
+          todos: []
+        }
+      );
+
+      setTask(data.task);
+      setNewSubtaskTitle("");
+      setNewSubtaskDesc("");
+
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
   
   const handleDeleteTodo = async (todoId) => {
     try {
@@ -140,22 +224,6 @@ const TaskView = () => {
       }
   };
 
-  const handleStatusChange = async (e) => {
-    const newStatus = e.target.value;
-
-    try {
-      const { data } = await axios.put(
-        `/task/status/${id}`,
-        { status: newStatus }
-      );
-
-      setTask(data.task);
-
-    } catch (error) {
-      console.error(error);
-    }
- };
-
   const fetchTask = async () => {
     const { data } = await axios.get(`/task/${id}`);
     setTask(data.task);
@@ -186,64 +254,74 @@ const TaskView = () => {
   if (loading) return <div>Loading 😒...</div>;
 
  return (
-  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 py-12 px-6">
+  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 ">
+    <Navbar/>
     <div className="max-w-4xl mx-auto space-y-10">
-
-     <div className="space-y-3">
+     <div className="space-y-3 mt-4">
         <ProgressBar value={task.progress} />
       </div>
 
       {/* HEADER CARD */}
-      <div className="bg-gray-800/60 backdrop-blur-xl border border-gray-700 p-10 rounded-3xl shadow-2xl shadow-black/30">
+      <div className="bg-gray-800/60 backdrop-blur-xl border border-gray-700 p-6 sm:p-10 rounded-3xl shadow-2xl shadow-black/30 space-y-10">
 
-        {/* Title + Priority */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3">
-              {task?.title}
-            </h1>
+        {/* HEADER */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
-            {/* Status */}
-            {canChangeStatus ? (
-              <div className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium ${getStatusColor()}`}>
-                <select
-                  value={task.status}
-                  onChange={handleStatusChange}
-                  className="bg-transparent outline-none appearance-none cursor-pointer"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-            ) : (
-              <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${getStatusColor()}`}>
-                {task.status}
+            <div className="flex-1">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                {task?.title}
+              </h1>
+            </div>
+
+
+            <div className="flex items-center gap-3">
+              {/* Status */}
+              <span
+                className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium ${getStatusColor()}`}
+              >
+                {task.status === "pending" && "Pending"}
+                {task.status === "in_progress" && "In Progress"}
+                {task.status === "completed" && "Completed"}
               </span>
-            )}
+              
+              {/* Priority */}
+              <span
+                className={`px-4 py-1.5 text-sm font-semibold rounded-full sm:self-auto ${getPriorityColor()}`}
+              >
+                {task?.priority?.toUpperCase()}
+              </span>
+
+            </div>
           </div>
 
-          <span className={`px-4 py-1.5 text-xs font-semibold rounded-full ${getPriorityColor()}`}>
-            {task?.priority?.toUpperCase()}
-          </span>
-        </div>
+        {task?.description && (
+          <div className="max-w-3xl">
+            <p className="text-gray-400 text-sm sm:text-[15px] leading-relaxed">
+              {task.description}
+            </p>
+          </div>
+        )}
 
-        {/* Meta Info */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-400">
+        {/* META INFO */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
-          <div>
-            <p className="text-xs uppercase tracking-wider mb-1 text-gray-500">
+          {/* Due Date */}
+          <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-5">
+            <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
               Due Date
             </p>
-            <p className={`font-medium ${
-              isOverdue ? "text-red-400" : "text-gray-200"
-            }`}>
+            <p
+              className={`font-medium ${
+                isOverdue ? "text-red-400" : "text-gray-200"
+              }`}
+            >
               {new Date(task.dueDate).toLocaleDateString()}
             </p>
           </div>
 
-          <div>
-            <p className="text-xs uppercase tracking-wider mb-1 text-gray-500">
+          {/* Created By */}
+          <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-5">
+            <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
               Created By
             </p>
             <p className="text-gray-200 font-medium">
@@ -251,22 +329,22 @@ const TaskView = () => {
             </p>
           </div>
 
-          <div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs uppercase tracking-wider text-gray-500">
-                  Assigned To
-                </p>
+          {/* Assigned Users */}
+          <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-5 space-y-4">
 
-                {(isAdmin || isCreator || isAssigned) && (
-                  <button
-                    onClick={() => setOpenAssign(true)}
-                    className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-full transition"
-                  >
-                    + Assign
-                  </button>
-                )}
-              </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-wider text-gray-500">
+                Assigned To
+              </p>
+
+              {(isAdmin || isCreator || isAssigned) && (
+                <button
+                  onClick={() => setOpenAssign(true)}
+                  className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-full transition"
+                >
+                  + Assign
+                </button>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -275,197 +353,176 @@ const TaskView = () => {
                   No users assigned
                 </span>
               ) : (
-              task?.assignedTo?.map(user => (
-                <div
-                  key={user._id}
-                  className="flex items-center gap-2 bg-gray-700 px-3 py-1 rounded-full text-xs"
-                >
-                  <span>{user?.name}</span>
+                task?.assignedTo?.map((user) => (
+                  <div
+                    key={user._id}
+                    className="flex items-center gap-2 bg-gray-700 px-3 py-1 rounded-full text-xs"
+                  >
+                    <span>{user?.name}</span>
 
-                  {(isAdmin || isCreator) && (
-                    <button
-                      onClick={() => handleUnAssignTask(user._id)}
-                      className="text-red-400 hover:text-red-300 text-xs"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              )))}
+                    {(isAdmin || isCreator) && (
+                      <button
+                        onClick={() => handleUnAssignTask(user._id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
-      </div>
-
-      {/* DESCRIPTION */}
-      <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-3xl shadow-lg">
-        <h2 className="text-xl font-semibold mb-4 tracking-tight">
-          Description
-        </h2>
-        <p className="text-gray-300 leading-relaxed text-[15px]">
-          {task?.description}
-        </p>
       </div>
 
     {/* TODO SECTION */}
-    <div className="bg-gray-800/60 border border-gray-700 p-8 rounded-3xl shadow-xl">
+    <TodoSection
+      title="Checklist"
+      todos={task?.todoChecklist || []}
+      newTodo={newTodo}
+      setNewTodo={setNewTodo}
+      onAdd={handleAddTodo}
+      onToggle={handleToggleTodo}
+      onDelete={handleDeleteTodo}
+      disabled={task?.status === "completed"}
+      completedCount={completedTodos}
+    /> 
 
-      <div className="flex items-center justify-between mb-6">
-        {task?.status === "completed" && (
-          <div className="mb-4 inline-block bg-green-600/20 text-green-400 px-4 py-2 rounded-xl text-sm font-medium">
-            Task Completed 🎉
-          </div>
-        )}
-        <h2 className="text-xl font-semibold mb-6 tracking-tight">
-          Checklist
-        </h2>
+    {/* SUBTASKS */}
+    <SubtaskSection
+      task={task}
+      newSubtaskTitle={newSubtaskTitle}
+      setNewSubtaskTitle={setNewSubtaskTitle}
+      newSubtaskDesc={newSubtaskDesc}
+      setNewSubtaskDesc={setNewSubtaskDesc}
+      handleCreateSubtask={handleCreateSubtask}
+      editingSubtaskId={editingSubtaskId}
+      setEditingSubtaskId={setEditingSubtaskId}
+      editTitle={editTitle}
+      setEditTitle={setEditTitle}
+      editDesc={editDesc}
+      setEditDesc={setEditDesc}
+      handleUpdateSubtask={handleUpdateSubtask}
+      handleDeleteSubtask={handleDeleteSubtask}
+      handleEditSubtask={handleEditSubtask}
+      subtaskInput={subtaskInput}
+      setSubtaskInput={setSubtaskInput}
+      handleAddSubtaskTodo={handleAddSubtaskTodo}
+      handleToggleSubtaskTodo={handleToggleSubtaskTodo}
+      handleDeleteSubtaskTodo={handleDeleteSubtaskTodo}
+    />
 
-        {totalTodos > 0 && (
-          <span className="text-sm text-gray-400">
-            {completedTodos} of {totalTodos} completed
-          </span>
-        )}
+    {/* COMMENTS */}
+    <div className="bg-gray-800/60 border border-gray-700 p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/20 space-y-8">
 
-      </div>
-      <div className="flex gap-3 mb-6">
-        <input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Add a todo..."
-          className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:border-blue-500 transition"
-        />
-       <button
-          onClick={handleAddTodo}
-          disabled={task?.status === "completed"}
-          className={`px-6 py-3 rounded-xl font-medium transition
-            ${
-              task?.status === "completed"
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500"
-            }`}
-        >
-          Add
-      </button>
-      </div>
-
-      <div className="space-y-3">
-        {task?.todoChecklist?.length === 0 ? (
-          <p className="text-gray-500 text-sm italic">
-            No todos yet
-          </p>
-        ) : (
-          task.todoChecklist.map(todo => (
-            <div
-              key={todo._id}
-              className="flex items-center justify-between bg-gray-900/60 border border-gray-700 p-4 rounded-xl"
-            >
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => handleToggleTodo(todo._id)}
-                className="w-4 h-4 accent-blue-500 cursor-pointer"
-              />
-
-              <span
-                className={`text-sm ${
-                  todo.completed
-                    ? "line-through text-gray-500"
-                    : "text-gray-200"
-                }`}
-              >
-                {todo.text}
-              </span>
-              </div>
-
-                <button
-                  onClick={() => handleDeleteTodo(todo._id)}
-                  className="text-red-400 hover:text-red-300 text-sm"
-                >
-                  Delete
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* COMMENTS */}
-      <div className="bg-gray-800/60 border border-gray-700 p-8 rounded-3xl shadow-xl shadow-black/20">
-
-        <h2 className="text-xl font-semibold mb-6 tracking-tight">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold tracking-tight">
           Comments
         </h2>
 
-        {/* Add Comment */}
-        <div className="flex items-center gap-3 mb-6">
-          <input
-            type="text"
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:border-blue-500 transition"
-            placeholder="Write a comment..."
-          />
-          <button
-            onClick={handleAddComment}
-            className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-medium transition"
-          >
-            Post
-          </button>
-        </div>
-
-        {/* Comment List */}
-        <div className="space-y-4">
-          {comments?.map(comment => (
-            <div
-              key={comment._id}
-              className="bg-gray-900/60 border border-gray-700 p-5 rounded-2xl hover:border-gray-600 transition"
-            >
-              <div className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">
-                {comment?.user?.name}
-              </div>
-              <div className="text-gray-200">
-                {comment?.text}
-              </div>
-            </div>
-          ))}
-        </div>
+        <span className="text-sm text-gray-400">
+          {comments?.length || 0} total
+        </span>
       </div>
-       
-        {/*Activity Log*/}
-        <div className="mt-8">
-          <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-3">
-            Activity
-          </h3>
 
-          <div className="flex flex-col gap-3">
-            {task.activity?.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-3 bg-gray-800 p-3 rounded-lg"
-              >
-                <div className="mt-1">
-                  {getActivityIcon(item.action)}
-                </div>
+      {/* Add Comment */}
+      <div className="flex items-center gap-3">
+        <input
+          type="text"
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
+          placeholder="Write a comment..."
+        />
+        <button
+          onClick={handleAddComment}
+          className="bg-white text-black hover:bg-gray-200 px-5 py-3 rounded-xl font-medium transition"
+        >
+          Post
+        </button>
+      </div>
 
-                <div className="flex flex-col">
-                  <p className="text-gray-300 text-sm">
-                    {item.message}
-                  </p>
+      {/* Divider */}
+      <div className="h-px bg-gray-700/60" />
 
-                  <span
-                    title={new Date(item.createdAt).toLocaleString()}
-                  >
-                    {formatDistanceToNow(new Date(item.createdAt), {
-                      addSuffix: true,
-                    })}
+      <div className="space-y-6">
+        {comments?.length === 0 ? (
+          <p className="text-sm text-gray-500 italic">
+            No comments yet
+          </p>
+        ) : (
+          comments?.map((comment) => (
+            <div key={comment._id} className="flex gap-4">
+
+              {/* Avatar Circle */}
+              <div className="w-9 h-9 rounded-full bg-blue-600/20 flex items-center justify-center text-sm font-semibold text-blue-400">
+                {comment?.user?.name?.charAt(0)}
+              </div>
+
+              {/* Comment Content */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-200">
+                    {comment?.user?.name}
                   </span>
                 </div>
+
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  {comment?.text}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
+
+            </div>
+          ))
+        )}
+      </div>
+
+    </div>
+       
+    {/* Activity Log */}
+    <div className="space-y-6">
+
+      <h3 className="text-sm uppercase tracking-wider text-gray-400">
+        Activity
+      </h3>
+
+      <div className="space-y-8">
+
+        {task.activity?.length === 0 ? (
+          <p className="text-sm text-gray-500 italic">
+            No activity yet
+          </p>
+        ) : (
+          task.activity?.map((item, index) => (
+            <div key={index} className="flex gap-4 items-start">
+
+              {/* Dot */}
+              <div className="mt-2 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0" />
+
+              {/* Content */}
+              <div className="flex-1 space-y-1">
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {item.message}
+                </p>
+
+                <span
+                  className="text-xs text-gray-500"
+                  title={new Date(item.createdAt).toLocaleString()}
+                >
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </div>
+
+            </div>
+          ))
+        )}
+
+      </div>
+    </div>
+
     </div>
 
     {openAssign && (
