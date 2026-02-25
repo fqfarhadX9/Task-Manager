@@ -29,13 +29,6 @@ const SubtaskSection = ({
         Subtasks
       </h2>
 
-      {/* {totalTodos > 0 && (
-          <span className="text-sm text-gray-400">
-            {completedTodos} of {totalTodos} completed
-          </span>
-        )} */}
-
-
       {/* Create Subtask */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
@@ -43,18 +36,18 @@ const SubtaskSection = ({
           placeholder="Subtask title..."
           value={newSubtaskTitle}
           onChange={(e) => setNewSubtaskTitle(e.target.value)}
-          className="flex-1 bg-gray-700 border border-gray-600 px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 transition"
+          className="flex-1 bg-gray-700 border border-gray-600 px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
         />
         <input
           type="text"
           placeholder="Description..."
           value={newSubtaskDesc}
           onChange={(e) => setNewSubtaskDesc(e.target.value)}
-          className="flex-1 bg-gray-700 border border-gray-600 px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 transition"
+          className="flex-1 bg-gray-700 border border-gray-600 px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
         />
         <button
           onClick={handleCreateSubtask}
-          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl"
+          className="bg-white text-black hover:bg-gray-200 px-4 py-2 rounded-xl"
         >
           Add
         </button>

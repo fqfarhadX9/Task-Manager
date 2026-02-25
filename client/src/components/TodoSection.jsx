@@ -34,7 +34,7 @@ const TodoSection = ({
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
           placeholder="Add a todo..."
-          className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:border-blue-500 transition"
+          className="flex-1 bg-gray-700/60 border border-gray-600 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition"
         />
 
         <button
@@ -44,7 +44,7 @@ const TodoSection = ({
             ${
               disabled
                 ? "bg-gray-600 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500"
+                :  "bg-white text-black hover:bg-gray-200"
             }`}
         >
           Add
