@@ -1,31 +1,15 @@
-import { useState } from "react";
-import axios from "../api/axios";
+
 import AssignUsersModal from "./AssignUsersModel";
 import { useNavigate } from "react-router-dom";
 
-const TaskCard = ({ task, setTasks, setEditingTask, handleUnassign }) => {
-  const [assignOpen, setAssignOpen] = useState(false);
+const TaskCard = ({ task, setEditingTask}) => {
   const navigate = useNavigate();
-
-  const updateStatus = async (newStatus) => {
-    try {
-      const {data} = await axios.put(`/task/status/${task._id}`, {
-        status: newStatus
-      });
-      setTasks(prevTasks => 
-        prevTasks.map(t => 
-          t && t._id === data.task._id ? data.task : t))
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
 
   const user =  JSON.parse(localStorage.getItem("user"));
   const canUpdate =
     user.role === "admin" ||
-    task.createdBy === user._id ||
-    task.assignedTo?.includes(user._id);
+    task.createdBy === user._id 
+    // task.assignedTo?.includes(user._id);
 
   const today = new Date();
   const taskDate = new Date(task.dueDate);
@@ -42,99 +26,91 @@ const TaskCard = ({ task, setTasks, setEditingTask, handleUnassign }) => {
   }
 
   return (
-    <div className="bg-gray-900 p-4 rounded-xl shadow-md">
-     <div className="flex justify-between items-start">
-        <h3 className="text-lg font-semibold">{task.title}</h3>
+    <div className="group bg-gray-900/60 backdrop-blur-sm border border-gray-800 hover:border-gray-700 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
-        <span
-          className={`px-2 py-1 text-xs rounded
-            ${
-              task.priority === "high"
-                ? "bg-red-600"
-                : task.priority === "medium"
-                ? "bg-yellow-500"
-                : "bg-green-600"
-            }
-          `}
-        >
-          {task.priority}
-        </span>
-    </div>
-      <p className="text-sm text-gray-400">{task.description}</p>
-      <p className="mt-2 text-sm">Status: {task.status}</p>
-      <p className={`mt-1 text-sm ${dueDateClass}`}>
-        Due: {task.dueDate?.split("T")[0]}
-      </p>
-      <div className="flex flex-wrap gap-2 mt-2">
-        Assigned:{task.assignedTo.map(u => (
-          <div
-            key={u._id}
-            className="flex items-center gap-1 bg-gray-700 px-2 py-1 rounded text-xs"
+      {/* Top Section */}
+      <div className="flex justify-between items-start gap-4">
+        <h3 className="text-lg font-semibold text-white leading-snug">
+          {task.title}
+        </h3>
+
+        <div className="flex gap-2 flex-wrap justify-end">
+
+          {/* Priority Badge */}
+          <span
+            className={`px-3 py-1 text-xs rounded-full font-medium
+              ${
+                task.priority === "high"
+                  ? "bg-red-500/20 text-red-400"
+                  : task.priority === "medium"
+                  ? "bg-yellow-500/20 text-yellow-400"
+                  : "bg-green-500/20 text-green-400"
+              }
+            `}
           >
-            {u.name}
-            <button
-              onClick={() => handleUnassign(task._id, u._id)}
-              className="text-red-400 ml-1"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
+            {task.priority}
+          </span>
+
+          {/* Status Badge */}
+          <span
+            className={`px-3 py-1 text-xs rounded-full font-medium
+              ${
+                task.status === "completed"
+                  ? "bg-green-500/20 text-green-400"
+                  : task.status === "in_progress"
+                  ? "bg-yellow-500/20 text-yellow-400"
+                  : "bg-red-500/20 text-red-400"
+              }
+            `}
+          >
+            {task.status.replace("_", " ")}
+          </span>
+
+        </div>
       </div>
 
-      <div className="flex gap-2 mt-3">
-         {canUpdate && (<button
-          onClick={() => updateStatus("in_progress")}
-          className="bg-yellow-500 px-3 py-1 rounded"
-          disabled={task.status === "in_progress"}
-        >
-          In Progress
-        </button>
-         )}
+      <p className="text-sm text-gray-400 mt-3 line-clamp-2">
+        {task.description}
+      </p>
 
-        {canUpdate && (
-          <button
-          onClick={() => updateStatus("completed")}
-          className="bg-green-600 px-3 py-1 rounded"
-          disabled={task.status === "completed"}
-        >
-          Completed
-        </button>
-        )}
+      <p className={`mt-4 text-sm font-medium ${dueDateClass}`}>
+        Due: {task.dueDate?.split("T")[0]}
+      </p>
+
+      {task.assignedTo?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-4">
+          <span className="text-gray-500">Assigned To:</span>{" "}
+          {task.assignedTo.map((u) => (
+            <div
+              key={u._id}
+              className="bg-gray-800 text-gray-300 px-3 py-1 rounded-full text-xs"
+            >
+              {u.name}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mt-6">
 
         {canUpdate && (
           <button
             onClick={() => setEditingTask(task)}
-            className="bg-gray-700 px-3 py-1 rounded"
+            className="text-sm px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
           >
             Edit
           </button>
         )}
 
-        {(user.role === "admin" || task.createdBy === user._id) && (
-          <button
-            onClick={() => setAssignOpen(true)}
-            className="bg-blue-500 px-3 py-1 rounded"
-          >
-            Assign Users
-          </button>
-        )}
-        {assignOpen && (
-          <AssignUsersModal
-            task={task}
-            setOpen={setAssignOpen}
-            setTasks={setTasks}
-          />
-        )}
-
-        <div
+        <button
           onClick={() => navigate(`/task/${task._id}`)}
-          className="cursor-pointer"
+          className="text-sm px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-gray-200 transition"
         >
           View Details
-        </div>
+        </button>
 
       </div>
+
     </div>
   );
 };
