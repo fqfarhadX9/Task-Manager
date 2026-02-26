@@ -71,7 +71,8 @@ const taskSchema = new mongoose.Schema(
       action: String,        // "assigned", "status_changed", etc
       message: String,       // readable message
       performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      createdAt: { type: Date, default: Date.now }
+      createdAt: { type: Date, default: Date.now },
+      isArchived: { type: Boolean, default: false }
      }
     ],
 

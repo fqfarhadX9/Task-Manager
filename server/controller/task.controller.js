@@ -344,7 +344,7 @@ const updateTaskStatus = async (req, res) => {
 
     if (!canModifyTask(task, req.user)) {
       return res.status(403).json({
-        message: "You are not allowed to delete this task",
+        message: "You are not allowed to change status of this task",
       });
     }
 
@@ -355,6 +355,12 @@ const updateTaskStatus = async (req, res) => {
       message: `${req.user.name} changed status to ${task.status}`,
       performedBy: req.user._id
     });
+
+    if (status === "completed") {
+      task.activity.forEach((item) => {
+      item.isArchived = true;
+      });
+    }
 
     await task.save();
 
@@ -865,6 +871,29 @@ const deleteSubtask = async (req, res) => {
   }
 };
 
+const clearActivity = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    task.activity.forEach((item) => {
+      item.isArchived = true;
+    });
+
+    await task.save();
+
+    res.json({ message: "Activity archived successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTask,
   getMyTasks,
@@ -884,5 +913,6 @@ module.exports = {
   addSubtaskTodo,
   deleteSubtaskTodo,
   updateSubtask,
-  deleteSubtask
+  deleteSubtask,
+  clearActivity
 };
