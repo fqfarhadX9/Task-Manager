@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import MyTasks from "./pages/MyTasks";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import TaskView from "./pages/TaskView";
+import Layout from "./components/Layout";
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           }
         />
