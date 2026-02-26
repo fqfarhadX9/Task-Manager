@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios.js";
-import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal.jsx";
 import EditTaskModal from "../components/EdittaskModal.jsx";
+import {CheckSquare, ListTodo, Clock, Users } from "lucide-react";
+import AnalyticsSection from "../components/AnalyticsSection.jsx";
+import TaskCompletionSection from "../components/TaskCompletionSection.jsx";
+import TaskDistribution from "../components/TaskDistribution.jsx";
+import ProjectStatus from "../components/ProjectStatus.jsx";
+import ProjectProgress from "../components/ProjectProgress.jsx";
+import TeamPerformance from "../components/TeamPerformance.jsx";
+import DashboardCalendar from "../components/DashboardCalender.jsx";
+import TeamActivity from "../components/TeamActivity.jsx";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -58,7 +66,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100">
-      <Navbar />
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,10 +98,38 @@ const Dashboard = () => {
 
         {/* Stats Section */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatsCard title="Total Tasks" value={total} />
-          <StatsCard title="Pending" value={pending} />
-          <StatsCard title="In Progress" value={inProgress} />
-          <StatsCard title="Completed" value={completed} />
+          <StatsCard title="Total Tasks" value={total} icon={<ListTodo size={18}/>} color="blue"/>
+          <StatsCard title="In Progress" value={inProgress} icon={<Clock size={18}/>} color="yellow"/>
+          <StatsCard title="Completed" value={completed} icon={<CheckSquare size={18}/>} color="green"/>
+          <StatsCard title="Team Members" value={20} icon={<Users size={18}/>} color="purple"/>
+        </div>
+
+        {/* Main Content - Charts + Activity, TaskDistribution + ProjectStatus, ProjectProgres + TeamPerformance, Calender + TeamActivity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+
+          <div className="lg:col-span-2">
+            <AnalyticsSection />
+          </div>
+
+          <div className="lg:col-span-1">
+            <TaskCompletionSection completed={completed} pending={pending} inProgress={inProgress} />
+          </div>
+
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <TaskDistribution />
+          <ProjectStatus />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <ProjectProgress />
+          <TeamPerformance />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <DashboardCalendar />
+          <TeamActivity />
         </div>
 
         {/* Filters Section */}

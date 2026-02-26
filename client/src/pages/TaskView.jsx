@@ -62,8 +62,20 @@ const TaskView = () => {
     task?.status !== "completed" &&
     new Date(task?.dueDate) < new Date();
 
-
   const completedTodos = task?.todoChecklist?.filter(t => t.completed).length || 0;
+
+
+  const handleClear = async () => {
+    try {
+      await axios.put(`/task/${id}/activity/clear`);
+      setTask(prev => ({
+        ...prev,
+        activity: []
+      }));
+    } catch (error) {
+      console.error(error.response?.data?.message);
+    }
+  };
 
   const handleDeleteSubtaskTodo = async (subtaskId, todoId) => {
     try {
@@ -268,7 +280,7 @@ const TaskView = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
             <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              <h1 className="text-3xl uppercase sm:text-4xl font-bold tracking-tight">
                 {task?.title}
               </h1>
             </div>
@@ -417,7 +429,7 @@ const TaskView = () => {
     <div className="bg-gray-800/60 border border-gray-700 p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/20 space-y-8">
 
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold tracking-tight">
+        <h2 className="text-xl uppercase font-semibold tracking-tight">
           Comments
         </h2>
 
@@ -487,14 +499,23 @@ const TaskView = () => {
         Activity
       </h3>
 
+      <button
+        onClick={handleClear}
+        className="text-gray-400 uppercase hover:text-red-400 transition"
+      >
+       Clear
+      </button>
+
       <div className="space-y-8">
 
-        {task.activity?.length === 0 ? (
+        {task?.activity?.length === 0 ? (
           <p className="text-sm text-gray-500 italic">
             No activity yet
           </p>
         ) : (
-          task.activity?.map((item, index) => (
+          task?.activity
+          ?.filter(item => !item.isArchived)
+          ?.map((item, index) => (
             <div key={index} className="flex gap-4 items-start">
 
               {/* Dot */}

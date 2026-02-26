@@ -16,7 +16,7 @@ const TodoSection = ({
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 className="text-lg font-semibold tracking-tight">
+        <h2 className="text-lg uppercase font-semibold tracking-tight">
           {title}
         </h2>
 
