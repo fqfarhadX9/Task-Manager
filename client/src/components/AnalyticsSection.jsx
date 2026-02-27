@@ -19,7 +19,6 @@ export default function AnalyticsSection() {
     thisMonth: 0,
   });
 
-  // ✅ Correct Time Based Value
   const timeMap = {
     week: analytics.thisWeek,
     month: analytics.thisMonth,
@@ -54,7 +53,6 @@ export default function AnalyticsSection() {
           Project Analytics
         </h2>
 
-        {/* ✅ FIXED SELECT */}
         <select
           value={timeFilter}
           onChange={(e) => setTimeFilter(e.target.value)}
