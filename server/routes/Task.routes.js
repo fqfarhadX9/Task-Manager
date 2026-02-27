@@ -24,6 +24,7 @@ const {
   addSubtaskTodo,
   deleteSubtaskTodo,
   clearActivity,
+  getProjectAnalytics,
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
@@ -46,5 +47,6 @@ router.delete("/:taskId/subtask/:subtaskId/todo/:todoId", protect, deleteSubtask
 router.put("/:taskId/subtask/:subtaskId", protect, updateSubtask);
 router.delete("/:taskId/subtask/:subtaskId", protect, deleteSubtask);
 router.put("/:taskId/activity/clear", protect, clearActivity);
+router.get("/analytics", protect, getProjectAnalytics);
 
 module.exports = router;

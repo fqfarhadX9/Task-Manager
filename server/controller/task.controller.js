@@ -894,6 +894,76 @@ const clearActivity = async (req, res) => {
   }
 };
 
+const getProjectAnalytics = async (req, res) => {
+  try {
+    const now = new Date();
+
+   // Monday start of the week
+    const startOfWeek = new Date(now);
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    // Month start
+    const startOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    );
+
+    
+    const analytics = await Task.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+        //   createdBy: req.user._id,
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const thisWeekCount = await Task.countDocuments({
+      isDeleted: false,
+    //   createdBy: req.user._id,
+      createdAt: { $gte: startOfWeek },
+    });
+
+    const thisMonthCount = await Task.countDocuments({
+      isDeleted: false,
+    //   createdBy: req.user._id,
+      createdAt: { $gte: startOfMonth },
+    });
+
+    let result = {
+      total: 0,
+      pending: 0,
+      in_progress: 0,
+      completed: 0,
+      thisWeek: thisWeekCount,
+      thisMonth: thisMonthCount,
+    };
+
+    analytics.forEach((item) => {
+      result.total += item.count;
+      result[item._id] = item.count;
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
 module.exports = {
   createTask,
   getMyTasks,
@@ -914,5 +984,6 @@ module.exports = {
   deleteSubtaskTodo,
   updateSubtask,
   deleteSubtask,
-  clearActivity
+  clearActivity,
+  getProjectAnalytics
 };
