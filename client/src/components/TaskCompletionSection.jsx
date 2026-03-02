@@ -46,7 +46,7 @@ export default function TaskCompletionSection({ completed, pending, inProgress }
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold text-white">
-            {completed}%
+            {completedPercentage}%
           </h1>
           <p className="text-sm text-gray-400">
             Completed
