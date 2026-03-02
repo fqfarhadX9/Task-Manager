@@ -6,8 +6,8 @@ const createTask = async (req, res) => {
   try {
     const { title, description, dueDate, priority } = req.body;
 
-    if (!title || !dueDate || !description) {
-      return res.status(400).json({ message: "Title, Description & Due Date required" });
+    if (!title || !dueDate || !description || !category) {
+      return res.status(400).json({ message: "Title, Description, Due Date & category required" });
     }
 
     const task = await Task.create({
@@ -15,6 +15,7 @@ const createTask = async (req, res) => {
       description,
       dueDate,
       priority,
+      category,
       createdBy: req.user._id,
     });
 

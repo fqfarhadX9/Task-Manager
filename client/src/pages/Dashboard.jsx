@@ -22,7 +22,31 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [editingTask, setEditingTask] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
 
+
+const loadDashboard = async () => {
+  try {
+    setLoading(true);
+
+    const [taskRes, analyticsRes] = await Promise.all([
+      axios.get("/task/my-tasks"),
+      axios.get("/task/analytics"),
+    ]);
+
+    setTasks(taskRes.data.tasks);
+    setAnalytics(analyticsRes.data);
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  loadDashboard();
+}, []);
 
   // Stats calculations
   const filteredTasks = tasks.filter(task =>
@@ -31,10 +55,10 @@ const Dashboard = () => {
     (priorityFilter ? task.priority === priorityFilter : true)
   );
  
-  const total = filteredTasks.length;
-  const pending = filteredTasks.filter(task => task?.status === "pending").length;
-  const inProgress = filteredTasks.filter(task => task?.status === "in_progress").length;
-  const completed = filteredTasks.filter(task => task?.status === "completed").length;
+  const total = analytics?.total || 0;
+  const pending = analytics?.pending || 0;
+  const inProgress = analytics?.in_progress || 0;
+  const completed = analytics?.completed || 0;
 
   const handleUnassign = async (taskId, userId) => {
       try {
@@ -47,23 +71,14 @@ const Dashboard = () => {
       } catch (error) {
         console.error(error);
       }
-    };
-
-  const fetchTasks = async () => {
-    try {
-      const { data } = await axios.get("/task/my-tasks");
-      setTasks(data.tasks);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
   };
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
+  if (loading || !analytics) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100">
+        <p className="text-gray-400">Loading dashboard...</p>
+      </div>
+    );
+  }  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100">
 
@@ -91,7 +106,7 @@ const Dashboard = () => {
           {open && (
             <CreateTaskModal
               setOpen={setOpen}
-              refreshTasks={fetchTasks}
+              refreshTasks={loadDashboard}
             />
           )}
         </div>
@@ -108,7 +123,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
 
           <div className="lg:col-span-2">
-            <AnalyticsSection />
+            <AnalyticsSection analytics={analytics} />
           </div>
 
           <div className="lg:col-span-1">
@@ -118,8 +133,8 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <TaskDistribution />
-          <ProjectStatus />
+          <TaskDistribution tasks={tasks}/>
+          <ProjectStatus analytics={analytics} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">

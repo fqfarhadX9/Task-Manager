@@ -51,6 +51,11 @@ const taskSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    category: {
+      type: String,
+      required: true,
+    },
+
     dueDate: { type: Date },
 
     assignedTo: [
