@@ -4,34 +4,10 @@ import {
   Cell,
   ResponsiveContainer,
 } from "recharts";
-import axios from "../api/axios.js";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 
-export default function AnalyticsSection() {
+export default function AnalyticsSection({ analytics }) {
   const [timeFilter, setTimeFilter] = useState("week");
-
-  const [analytics, setAnalytics] = useState({
-    total: 0,
-    in_progress: 0,
-    completed: 0,
-    pending: 0,
-    thisWeek: 0,
-    thisMonth: 0,
-  });
-
-  const timeMap = {
-    week: analytics.thisWeek,
-    month: analytics.thisMonth,
-  };
-
-  const fetchAnalytics = async () => {
-    try {
-      const { data } = await axios.get("/analytics/project-status");
-      setAnalytics(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const chartData = [
     { name: "Planning", value: 0, color: "#3B82F6" },
@@ -40,9 +16,7 @@ export default function AnalyticsSection() {
     { name: "Pending", value: analytics.pending, color: "#EF4444" },
   ];
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
+  const total = analytics.total || 0;
 
   return (
     <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
@@ -87,11 +61,8 @@ export default function AnalyticsSection() {
 
           {/* Center Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold text-white">
-              {timeMap[timeFilter]}
-            </h1>
             <p className="text-sm text-gray-400">
-              {timeFilter === "week" ? "This Week" : "This Month"}
+              Total Tasks: {total}
             </p>
           </div>
 
