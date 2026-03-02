@@ -3,6 +3,7 @@ import axios from "../api/axios";
 
 const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
   const [title, setTitle] = useState(task.title);
+   const [category, setCategory] = useState(task.category);
   const [description, setDescription] = useState(task.description);
   const [dueDate, setDueDate] = useState(task.dueDate?.split("T")[0]);
   const [priority, setPriority] = useState(task.priority);
@@ -13,6 +14,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
     try {
       const { data } = await axios.put(`/task/${task._id}`, {
         title,
+        category,
         description,
         dueDate,
         priority,
@@ -59,6 +61,17 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
               className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+
+           <div>
+            <label className="text-sm text-gray-400 mb-2 block">
+              Category
+            </label>
+            <input
+              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
             />
           </div>
 

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import axios from "../api/axios";
 
-const CreateTaskModal = ({ setOpen, refreshTasks }) => {
+const CreateTaskModal = ({ setOpen, loadDashboard }) => {
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("medium");
@@ -14,11 +15,12 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
     try {
       await axios.post("/task", {
         title,
+        category,
         description,
         dueDate,
         priority
       });
-      refreshTasks(); 
+      loadDashboard(); 
       setOpen(false);
     } catch (error) {
       console.error(error);
@@ -42,10 +44,8 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
-          {/* Title */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-400">Title</label>
             <input
@@ -58,7 +58,18 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
             />
           </div>
 
-          {/* Description */}
+           <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-400">Category</label>
+            <input
+              type="text"
+              placeholder="Enter task category"
+              className="bg-gray-800 border border-gray-700 focus:border-white focus:ring-1 focus:ring-white p-3 rounded-lg outline-none transition"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
+          </div>
+
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-400">Description (optional)</label>
             <textarea
@@ -70,7 +81,6 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
             />
           </div>
 
-          {/* Due Date + Priority Row */}
           <div className="grid grid-cols-2 gap-4">
 
             <div className="flex flex-col gap-2">
@@ -98,7 +108,6 @@ const CreateTaskModal = ({ setOpen, refreshTasks }) => {
 
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
