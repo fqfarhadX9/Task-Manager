@@ -36,6 +36,7 @@ const loadDashboard = async () => {
 
     setTasks(taskRes.data.tasks);
     setAnalytics(analyticsRes.data);
+  
 
   } catch (error) {
     console.error(error);
@@ -138,7 +139,7 @@ useEffect(() => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <ProjectProgress />
+          <ProjectProgress tasks={tasks}/>
           <TeamPerformance />
         </div>
 
