@@ -36,7 +36,6 @@ router.delete("/:id", protect, isAdmin, deleteTask);
 router.get("/", protect, isAdmin, getAllTasks);
 router.get("/assigned", protect, getAssignedTasks);
 router.put("/status/:id", protect, updateTaskStatus);
-router.get("/:id", protect, getSingleTask);
 router.post("/todo/:id", protect, addTodo);
 router.put("/todo/:taskId/:todoId", protect, toggleTodo);
 router.delete("/todo/:taskId/:todoId", protect, deleteTodo);
@@ -48,5 +47,6 @@ router.put("/:taskId/subtask/:subtaskId", protect, updateSubtask);
 router.delete("/:taskId/subtask/:subtaskId", protect, deleteSubtask);
 router.put("/:taskId/activity/clear", protect, clearActivity);
 router.get("/analytics", protect, getProjectAnalytics);
+router.get("/:id", protect, getSingleTask);
 
 module.exports = router;
