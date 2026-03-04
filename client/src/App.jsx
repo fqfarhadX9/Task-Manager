@@ -6,6 +6,7 @@ import MyTasks from "./pages/MyTasks";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import TaskView from "./pages/TaskView";
 import Layout from "./components/Layout";
+import Members from "./pages/Members";
 
 function App() {
   return (
@@ -32,6 +33,17 @@ function App() {
             <TaskView />
           </ProtectedRoute>
          }
+        />
+
+        <Route
+          path="/members"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Members />
+              </Layout>
+            </ProtectedRoute>
+          }
         />
 
         <Route
