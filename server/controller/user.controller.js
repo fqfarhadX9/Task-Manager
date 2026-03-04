@@ -35,15 +35,13 @@ const getAllUsers = async (req, res) => {
     }
 
     // Filter by role
-    if (role) {
+    if (role && role !== "all") {
       query.role = role;
     }
 
     // Filter by status
-    if (status === "active") {
-      query.isActive = true;
-    } else if (status === "inactive") {
-      query.isActive = false;
+    if (status !== undefined) {
+      query.isActive = status === "true";
     }
 
     const users = await User.find(query)
