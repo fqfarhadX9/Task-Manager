@@ -17,7 +17,8 @@ const MembersHeader = ({
   showFilter,
   setShowFilter,
   showAddMember,
-  setShowAddMember
+  setShowAddMember,
+  fetchMembers
 }) => {
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -124,6 +125,7 @@ const MembersHeader = ({
         {showAddMember && (
           <AddMemberModal 
             setShowAddMember={setShowAddMember} 
+            fetchMembers={fetchMembers}
           />
         )}
 

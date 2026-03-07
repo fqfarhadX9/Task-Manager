@@ -49,6 +49,7 @@ const Members = () => {
         setShowFilter={setShowFilter} 
         showAddMember={showAddMember}
         setShowAddMember={setShowAddMember}
+        fetchMembers={fetchMembers}
       />
 
       {/* MEMBER CATEGORY TABS */}

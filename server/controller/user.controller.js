@@ -62,6 +62,55 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  try {
+
+    const {
+      name,
+      email,
+      role,
+      position,
+      isActive,
+      bio
+    } = req.body;
+
+    if(!name || !email || !role || !position || !isActive) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required except bio"
+      });
+    }
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      return res.status(400).json({
+        message: "User already exists"
+      });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password: "1234567",
+      role,
+      position,
+      isActive,
+      bio,
+    });
+
+    res.status(201).json({
+      success: true,
+      user
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -138,6 +187,7 @@ const activateUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  createUser,
   updateUser,
   deactivateUser,
   activateUser,
