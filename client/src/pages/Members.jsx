@@ -14,10 +14,11 @@ const Members = () => {
     const [roleFilter, setRoleFilter] = useState("all"); // admin | member
     const [showFilter, setShowFilter] = useState(false);
     const [showAddMember, setShowAddMember] = useState(false);
+    const [positionFilter, setPositionFilter] = useState("all");
 
     const fetchMembers = async () => {
         try {
-          const {data} = await axios.get(`/user?search=${search}&role=${roleFilter}&status=${statusFilter}&page=${currentPage}`);
+          const {data} = await axios.get(`/user?search=${search}&role=${roleFilter}&status=${statusFilter}&position=${positionFilter}&page=${currentPage}`);
           setUsers(data.users);
           setPageInfo({
             page: data.page,  
@@ -31,11 +32,11 @@ const Members = () => {
 
     useEffect(() => {
       fetchMembers();
-    }, [search, currentPage, roleFilter, statusFilter]);
+    }, [search, currentPage, roleFilter, statusFilter, positionFilter]);
 
     useEffect(() => {
       setCurrentPage(1);
-    }, [search, roleFilter, statusFilter]);
+    }, [search, roleFilter, statusFilter, positionFilter]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 p-6">
 
@@ -53,7 +54,10 @@ const Members = () => {
       />
 
       {/* MEMBER CATEGORY TABS */}
-      <MembersTabs />
+      <MembersTabs 
+        positionFilter={positionFilter}
+        setPositionFilter={setPositionFilter}
+      />
 
       {/* MEMBERS GRID SECTION */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">

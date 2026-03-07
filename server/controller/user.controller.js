@@ -20,6 +20,7 @@ const getAllUsers = async (req, res) => {
       search,
       role,
       status,
+      position,
       page = 1,
       limit = 10,
     } = req.query;
@@ -39,6 +40,10 @@ const getAllUsers = async (req, res) => {
 
     if (status && status !== "all") {
       query.isActive = status === "true" || status === true;
+    }
+
+    if (position && position !== "all") {
+      query.position = { $regex: `^${position}$`, $options: "i" };
     }
 
     const users = await User.find(query)
