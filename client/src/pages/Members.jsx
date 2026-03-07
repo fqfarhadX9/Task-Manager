@@ -13,6 +13,7 @@ const Members = () => {
     const [statusFilter, setStatusFilter] = useState("all"); // active | away   
     const [roleFilter, setRoleFilter] = useState("all"); // admin | member
     const [showFilter, setShowFilter] = useState(false);
+    const [showAddMember, setShowAddMember] = useState(false);
 
     const fetchMembers = async () => {
         try {
@@ -46,6 +47,8 @@ const Members = () => {
         setRoleFilter={setRoleFilter} 
         showFilter={showFilter} 
         setShowFilter={setShowFilter} 
+        showAddMember={showAddMember}
+        setShowAddMember={setShowAddMember}
       />
 
       {/* MEMBER CATEGORY TABS */}

@@ -1,20 +1,41 @@
-import { Search, Filter, Plus } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Plus,
+  CheckCircle,
+  Clock,
+  Shield,
+  User
+} from "lucide-react";
+import AddMemberModal from "./AddMemberModal";
 
-const MembersHeader = ({ search, setSearch, setStatusFilter, setRoleFilter, showFilter, setShowFilter }) => {
+const MembersHeader = ({
+  search,
+  setSearch,
+  setStatusFilter,
+  setRoleFilter,
+  showFilter,
+  setShowFilter,
+  showAddMember,
+  setShowAddMember
+}) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
+      {/* TITLE */}
       <h1 className="text-3xl font-semibold text-white">
         Team Members
       </h1>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
 
+        {/* SEARCH */}
         <div className="relative">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
           />
+
           <input
             type="text"
             placeholder="Search members..."
@@ -24,58 +45,87 @@ const MembersHeader = ({ search, setSearch, setStatusFilter, setRoleFilter, show
           />
         </div>
 
-        <button className="bg-[#1F2937] border border-gray-700 p-2 rounded-lg hover:bg-gray-800 transition" onClick={() => setShowFilter(!showFilter)}>
-          <Filter size={18} className="text-gray-300" />
-        </button>
+        {/* FILTER */}
+        <div className="relative">
 
-        {showFilter && (
-          <div className="absolute right-0 mt-2 w-64 bg-[#111827] border border-gray-700 rounded-xl p-4 shadow-lg z-50">
+          <button
+            onClick={() => setShowFilter(!showFilter)}
+            className="flex items-center gap-2 bg-[#1F2937] border border-gray-700 px-3 py-2 rounded-lg hover:bg-gray-800 transition"
+          >
+            <Filter size={16} />
+            Filter
+          </button>
 
-            {/* Filter By Section */}
-            <div className="mb-4">
-              <h4 className="text-gray-400 text-sm mb-2">Filter By</h4>
+          {showFilter && (
+            <div className="absolute right-0 top-12 w-56 bg-[#111827] border border-gray-700 rounded-lg shadow-xl p-3 z-50">
+
+              <p className="text-xs text-gray-400 mb-2">Status</p>
 
               <div
-                onClick={() => setStatusFilter(true)}
-                className="flex items-center gap-2 cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
+                onClick={() => {
+                  setStatusFilter("true");
+                  setShowFilter(false);
+                }}
+                className="flex items-center gap-2 text-sm cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
               >
-                🟢 <span>Active Members</span>
+                <CheckCircle size={16} className="text-green-500" />
+                Active
               </div>
 
               <div
-                onClick={() => setStatusFilter(false)}
-                className="flex items-center gap-2 cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
+                onClick={() => {
+                  setStatusFilter("false");
+                  setShowFilter(false);
+                }}
+                className="flex items-center gap-2 text-sm cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
               >
-                🟡 <span>Away Members</span>
+                <Clock size={16} className="text-yellow-400" />
+                Away
               </div>
-            </div>
 
-            {/* Access Level Section */}
-            <div>
-              <h4 className="text-gray-400 text-sm mb-2">Access Level</h4>
+              <div className="border-t border-gray-700 my-2"></div>
+
+              <p className="text-xs text-gray-400 mb-2">Access</p>
 
               <div
-                onClick={() => setRoleFilter("admin")}
-                className="cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
+                onClick={() => {
+                  setRoleFilter("admin");
+                  setShowFilter(false);
+                }}
+                className="flex items-center gap-2 text-sm cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
               >
+                <Shield size={16} className="text-blue-500" />
                 Admin
               </div>
 
               <div
-                onClick={() => setRoleFilter("user")}
-                className="cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
+                onClick={() => {
+                  setRoleFilter("user");
+                  setShowFilter(false);
+                }}
+                className="flex items-center gap-2 text-sm cursor-pointer hover:bg-[#1F2937] p-2 rounded-md"
               >
+                <User size={16} className="text-gray-400" />
                 Member
               </div>
+
             </div>
+          )}
 
-          </div>
-        )}
+        </div>
 
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+        <button 
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          onClick={() => setShowAddMember(true)}>
           <Plus size={16} />
           Add Member
         </button>
+
+        {showAddMember && (
+          <AddMemberModal 
+            setShowAddMember={setShowAddMember} 
+          />
+        )}
 
       </div>
     </div>
