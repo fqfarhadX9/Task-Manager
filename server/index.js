@@ -14,6 +14,7 @@ connectDB();
 
 const app = express();
 
+app.set("etag", false);
 app.use(express.json());
 app.use(cookieParser());
 

@@ -26,7 +26,6 @@ const getAllUsers = async (req, res) => {
 
     const query = {};
 
-    // Search by name or email
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -34,19 +33,17 @@ const getAllUsers = async (req, res) => {
       ];
     }
 
-    // Filter by role
     if (role && role !== "all") {
       query.role = role;
     }
 
-    // Filter by status
-    if (status !== undefined) {
-      query.isActive = status === "true";
+    if (status && status !== "all") {
+      query.isActive = status === "true" || status === true;
     }
 
     const users = await User.find(query)
       .select("-password")
-      .skip((page - 1) * limit)
+      .skip((page - 1) * Number(limit))
       .limit(Number(limit))
       .sort({ createdAt: -1 });
 
@@ -56,7 +53,7 @@ const getAllUsers = async (req, res) => {
       success: true,
       page: Number(page),
       totalUsers,
-      totalPages: Math.ceil(totalUsers / limit),
+      totalPages: Math.ceil(totalUsers / Number(limit)),
       users,
     });
 

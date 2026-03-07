@@ -33,6 +33,17 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    // developer / designer / marketer etc
+    position: {
+      type: String,
+      default: "Member",
+    },
+
+    bio: {
+      type: String,
+      default: "",
+    },
+
     isActive: {
       type: Boolean,
       default: true,
