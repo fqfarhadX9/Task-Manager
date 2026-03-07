@@ -4,6 +4,7 @@ import MemberCard from "../components/members/MemberCard";
 import MembersPagination from "../components/members/MembersPagination";
 import { useEffect, useState } from "react";
 import axios from "../api/axios.js";
+import MemberDetailsModal from "../components/members/MemberDetailsModal.jsx";
 
 const Members = () => {
     const [users, setUsers] = useState([]);
@@ -15,6 +16,7 @@ const Members = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [showAddMember, setShowAddMember] = useState(false);
     const [positionFilter, setPositionFilter] = useState("all");
+    const [selectedMember, setSelectedMember] = useState(null);
 
     const fetchMembers = async () => {
         try {
@@ -63,7 +65,10 @@ const Members = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
 
        { users?.map((member) => (
-          <MemberCard key={member._id} member={member} />
+          <MemberCard 
+            key={member._id} 
+            member={member} 
+            setSelectedMember={setSelectedMember}/>
         ))}
 
       </div>
@@ -74,6 +79,13 @@ const Members = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+
+      {selectedMember && (
+        <MemberDetailsModal
+          member={selectedMember}
+          onClose={() => setSelectedMember(null)}
+        />
+      )}
 
     </div>
   );
