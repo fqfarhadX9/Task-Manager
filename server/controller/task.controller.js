@@ -872,6 +872,43 @@ const deleteSubtask = async (req, res) => {
   }
 };
 
+const getTaskStats = async (req, res) => {
+  try {
+
+    const totalTasks = await Task.countDocuments({ isDeleted: false });
+
+    const completed = await Task.countDocuments({
+      status: "completed",
+      isDeleted: false
+    });
+
+    const overdue = await Task.countDocuments({
+      dueDate: { $lt: new Date() },  //{less than:  dueDate < aaj ki date}
+      status: { $ne: "completed" },  // {not equal: status != completed}
+      isDeleted: false
+    });
+
+    const dueSoon = await Task.countDocuments({
+      dueDate: {
+        $gte: new Date(),                                // {greater than or equal: dueDate >= today}
+        $lte: new Date(Date.now() + 48 * 60 * 60 * 1000) // {less than or equal: dueDate <= next 48 hours}
+      },
+      status: { $ne: "completed" },
+      isDeleted: false
+    });
+
+    res.json({
+      totalTasks,
+      completed,
+      overdue,
+      dueSoon
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const clearActivity = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -985,6 +1022,7 @@ module.exports = {
   deleteSubtaskTodo,
   updateSubtask,
   deleteSubtask,
+  getTaskStats,
   clearActivity,
   getProjectAnalytics
 };
