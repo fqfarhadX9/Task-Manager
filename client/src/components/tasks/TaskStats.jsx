@@ -1,23 +1,6 @@
-import axios from "../../api/axios.js";
 import { BarChart3, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
-import { useEffect, useState } from "react";
 
-export default function TaskStats() {
-    
-    const [stats, setStats] = useState({
-        totalTasks: 0,
-        completed: 0,
-        overdue: 0,
-        dueSoon: 0
-    });
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            const {data} = await axios.get("/task/stats");
-            setStats(data);
-        };
-        fetchStats();
-    }, []);
+export default function TaskStats({stats}) {
 
   return (
 
