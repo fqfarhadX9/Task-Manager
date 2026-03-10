@@ -1000,6 +1000,17 @@ const getTaskDashboardData = async (req, res) => {
       }
     ]);
 
+    const calendarTasks = await Task.find(
+      { 
+        isDeleted: false,
+        // dueDate: { $ne: null } 
+      },
+      { 
+        title: 1, 
+        dueDate: 1, 
+      }
+    );
+
     res.json({
       stats: {
         totalTasks,
@@ -1010,7 +1021,8 @@ const getTaskDashboardData = async (req, res) => {
       priorityDistribution: priorityData,
       taskCategories: categories,
       teamWorkload,
-      upcomingDeadlines
+      upcomingDeadlines,
+      calendarTasks
     });
 
   } catch (error) {

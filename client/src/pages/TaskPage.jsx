@@ -48,7 +48,7 @@ export default function TaskPage() {
 
         <UpcomingDeadlines data={dashboard.upcomingDeadlines}/>
 
-        <TaskCalendar />
+        <TaskCalendar data={dashboard.calendarTasks}/>
 
       </div>
 
