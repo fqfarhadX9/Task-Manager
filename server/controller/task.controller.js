@@ -936,14 +936,35 @@ const getTaskDashboardData = async (req, res) => {
 
       { $unwind: "$assignedTo" },
 
+      
       {
         $group: {
           _id: "$assignedTo",
           tasks: { $sum: 1 }
         }
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+
+      { $unwind: "$user" },
+
+      {
+        $project: {
+          _id: 0,
+          userId: "$user._id",
+          name: "$user.name",
+          profilePic: "$user.profileImageUrl",
+          tasks: 1
+        }
       }
     ]);
-
 
     res.json({
       stats: {
