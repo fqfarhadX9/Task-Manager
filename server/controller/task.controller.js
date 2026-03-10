@@ -966,6 +966,40 @@ const getTaskDashboardData = async (req, res) => {
       }
     ]);
 
+    const upcomingDeadlines = await Task.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+          status: { $ne: "completed" },
+          dueDate: { $exists: true }
+        }
+      },
+
+      { $sort: { dueDate: 1 } },
+
+      { $limit: 5 },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignedTo",
+          foreignField: "_id",
+          as: "assignedUsers"
+        }
+      },
+
+      {
+        $project: {
+          title: 1,
+          priority: 1,
+          dueDate: 1,
+          assignedUsers: {
+            name: 1,
+          }
+        }
+      }
+    ]);
+
     res.json({
       stats: {
         totalTasks,
@@ -975,7 +1009,8 @@ const getTaskDashboardData = async (req, res) => {
       },
       priorityDistribution: priorityData,
       taskCategories: categories,
-      teamWorkload
+      teamWorkload,
+      upcomingDeadlines
     });
 
   } catch (error) {

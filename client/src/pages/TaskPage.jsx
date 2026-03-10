@@ -46,7 +46,7 @@ export default function TaskPage() {
 
       <div className="grid grid-cols-2 gap-6 mt-8">
 
-        <UpcomingDeadlines />
+        <UpcomingDeadlines data={dashboard.upcomingDeadlines}/>
 
         <TaskCalendar />
 
