@@ -872,7 +872,7 @@ const deleteSubtask = async (req, res) => {
   }
 };
 
-const getTaskStats = async (req, res) => {
+const getTaskDashboardData = async (req, res) => {
   try {
 
     const totalTasks = await Task.countDocuments({ isDeleted: false });
@@ -897,11 +897,64 @@ const getTaskStats = async (req, res) => {
       isDeleted: false
     });
 
+     const priorityData = await Task.aggregate([
+      { $match: { isDeleted: false } },
+      {
+        $group: {
+          _id: "$priority",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          name: "$_id",
+          value: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    const categories = await Task.aggregate([
+      { $match: { isDeleted: false } },
+      {
+        $group: {
+          _id: "$category",
+          tasks: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          name: "$_id",
+          tasks: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    const teamWorkload = await Task.aggregate([
+      { $match: { isDeleted: false } },
+
+      { $unwind: "$assignedTo" },
+
+      {
+        $group: {
+          _id: "$assignedTo",
+          tasks: { $sum: 1 }
+        }
+      }
+    ]);
+
+
     res.json({
-      totalTasks,
-      completed,
-      overdue,
-      dueSoon
+      stats: {
+        totalTasks,
+        completed,
+        overdue,
+        dueSoon
+      },
+      priorityDistribution: priorityData,
+      taskCategories: categories,
+      teamWorkload
     });
 
   } catch (error) {
@@ -1022,7 +1075,7 @@ module.exports = {
   deleteSubtaskTodo,
   updateSubtask,
   deleteSubtask,
-  getTaskStats,
+  getTaskDashboardData,
   clearActivity,
   getProjectAnalytics
 };
