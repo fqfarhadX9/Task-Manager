@@ -1011,6 +1011,39 @@ const getTaskDashboardData = async (req, res) => {
       }
     );
 
+    // const taskStatus = await Task.aggregate([
+    //   { $match: { isDeleted: false } },
+    //   {
+    //     $group: {
+    //       _id: "$status",
+    //       count: { $sum: 1 }
+    //     }
+    //   }
+    // ]);
+
+    // const taskStatusObj = {
+    //   pending: 0,
+    //   in_progress: 0,
+    //   completed: 0
+    // };
+
+    // taskStatus.forEach(item => {
+    //   taskStatusObj[item._id] = item.count;
+    // });
+
+    const taskStatusTasks = await Task.find({ isDeleted: false })
+      .populate("assignedTo", "name ")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    taskStatusTasks.map(task => ({
+      title: task.title,
+      description: task.description,
+      assigned: task.assignedTo.map(u => u.name).join(", "),
+      due: task.dueDate,
+      priority: task.priority
+    }))
+
     res.json({
       stats: {
         totalTasks,
@@ -1022,7 +1055,8 @@ const getTaskDashboardData = async (req, res) => {
       taskCategories: categories,
       teamWorkload,
       upcomingDeadlines,
-      calendarTasks
+      calendarTasks,
+      taskStatusTasks
     });
 
   } catch (error) {

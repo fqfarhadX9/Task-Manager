@@ -53,7 +53,7 @@ export default function TaskPage() {
       </div>
 
       <div className=" mt-8">
-        <TaskStatus />
+        <TaskStatus data={dashboard.taskStatusTasks}/>
       </div>
 
     </div>
