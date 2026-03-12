@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth.js')
 const userRoutes = require('./routes/user.route.js');
 const taskRoutes = require('./routes/task.routes.js');
 const commentRoutes = require('./routes/comment.routes.js');
+const eventRoutes = require("./routes/event.routes");
 
 
 dotenv.config(); 
@@ -27,7 +28,8 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/task", taskRoutes);
-app.use("/api/comment", commentRoutes)
+app.use("/api/comment", commentRoutes);
+app.use("/api/event", eventRoutes);
 
 const port = process.env.PORT || 8800;
 
