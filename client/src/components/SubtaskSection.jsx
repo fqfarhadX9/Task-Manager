@@ -25,7 +25,7 @@ const SubtaskSection = ({
   return (
     <div className="bg-gray-800/60 border border-gray-700 p-4 sm:p-8 rounded-3xl shadow-xl">
 
-      <h2 className="text-lg sm:text-xl font-semibold mb-6 tracking-tight">
+      <h2 className="text-lg uppercase sm:text-xl font-semibold mb-6 tracking-tight">
         Subtasks
       </h2>
 

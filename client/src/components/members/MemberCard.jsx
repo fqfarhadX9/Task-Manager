@@ -1,11 +1,11 @@
 import { MessageSquare, User } from "lucide-react";
 
-const MemberCard = ({ member }) => {
+const MemberCard = ({ member, setSelectedMember }) => {
   return (
-    <div className="bg-[#111827] rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition">
+    <div className="bg-[#111827] rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition cursor-pointer" onClick={() => setSelectedMember(member)}>
 
       {/* TOP SECTION */}
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-4 ">
 
         <img
           src={member.profileImageUrl}
@@ -21,7 +21,7 @@ const MemberCard = ({ member }) => {
 
           <div className="flex items-center gap-3 mt-1">
             <p className="text-sm text-gray-400">
-              {member.designation || "Developer"}
+              {member.position || "Developer"}
             </p>
 
             <span
