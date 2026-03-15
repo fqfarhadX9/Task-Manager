@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import Members from "./pages/Members";
 import TaskPage from "./pages/TaskPage";
 import CalendarPage from "./pages/CalenderPage";
+import Attendance from "./pages/Attendance";
 
 function App() {
   return (
@@ -64,6 +65,17 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <CalendarPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/attendance"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Attendance />
               </Layout>
             </ProtectedRoute>
           }

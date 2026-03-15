@@ -3,8 +3,9 @@ import {
   Users,
   CheckSquare,
   Calendar,
-  BarChart2,
+  // BarChart2,
   MessageSquare,
+  Clock4,
 } from "lucide-react";
 
 import SidebarItem from "./SidebarItem";
@@ -33,9 +34,9 @@ export default function Sidebar({ sidebarOpen }) {
       <nav className="flex-1 px-4 py-6 space-y-2">
         <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active />
         <SidebarItem icon={<Users size={18} />} label="Members" active/>
-        <SidebarItem icon={<CheckSquare size={18} />} label="Tasks" />
-        <SidebarItem icon={<Calendar size={18} />} label="Calendar" />
-        <SidebarItem icon={<BarChart2 size={18} />} label="Performance" />
+        <SidebarItem icon={<CheckSquare size={18} />} label="Tasks" active />
+        <SidebarItem icon={<Calendar size={18} />} label="Calendar" active/>
+        <SidebarItem icon={<Clock4 size={18} />} label="Attendance" active/>
         <SidebarItem icon={<MessageSquare size={18} />} label="Messages" />
       </nav>
 
