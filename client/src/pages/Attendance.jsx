@@ -4,79 +4,66 @@ import AttendanceTable from "../components/attendance/AttendanceTable";
 import TimeOffRequests from "../components/attendance/TimeOffRequests";
 import LateArrivalsAnalysis from "../components/attendance/LateArrivalsAnalysis";
 import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
+import TodayAttendanceCard from "../components/attendance/TodayAttendanceCard";
 import WFHTracker from "../components/attendance/WFHTracker";
-export default function Attendance() {
+import axios from "../api/axios.js";
+import { useState } from "react";
+import { useEffect } from "react";
 
-  const attendanceData = [
-    {
-      name: "John Smith",
-      date: "May 18, 2025",
-      checkIn: "8:45 AM",
-      checkOut: "5:30 PM",
-      status: "present",
-      hours: "8h 45m",
-    },
-    {
-      name: "Sarah Johnson",
-      date: "May 18, 2025",
-      checkIn: "9:05 AM",
-      checkOut: "5:45 PM",
-      status: "present",
-      hours: "8h 40m",
-    },
-    {
-      name: "Michael Brown",
-      date: "May 18, 2025",
-      checkIn: "8:30 AM",
-      checkOut: "4:30 PM",
-      status: "present",
-      hours: "8h 00m",
-    },
-    {
-      name: "Emily Davis",
-      date: "May 18, 2025",
-      checkIn: "10:15 AM",
-      checkOut: "6:30 PM",
-      status: "late",
-      hours: "8h 15m",
-    },
-    {
-      name: "David Wilson",
-      date: "May 18, 2025",
-      checkIn: "--",
-      checkOut: "--",
-      status: "absent",
-      hours: "--",
-    },
-    {
-      name: "Jennifer Lee",
-      date: "May 18, 2025",
-      checkIn: "8:55 AM",
-      checkOut: "5:50 PM",
-      status: "present",
-      hours: "8h 55m",
-    },
-    {
-      name: "Robert Taylor",
-      date: "May 18, 2025",
-      checkIn: "9:00 AM",
-      checkOut: "3:30 PM",
-      status: "half",
-      hours: "6h 30m",
-    },
-  ];
+
+export default function Attendance() {
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredData =
+    statusFilter === "all"
+      ? attendanceData
+      : attendanceData.filter((item) =>
+          item.status === statusFilter);
+  
+  const fetchAttendance = async (date=new Date()) => {
+      try {
+
+        const formattedDate = date.toISOString().split("T")[0];
+
+        const res = await axios.get(
+          `/attendance?date=${formattedDate}`
+        );
+
+        setAttendanceData(res.data.attendance);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+
+  useEffect(() => {
+    fetchAttendance(selectedDate);
+  }, [setSelectedDate])
 
   return (
     <div className="p-6 bg-[#0F172A] min-h-screen text-white">
+       <div className="mt-6">
+        <TodayAttendanceCard 
+          refreshAttendance={fetchAttendance} 
+        />
+      </div>
 
-      <AttendanceHeader />
+      <AttendanceHeader 
+        attendanceData={attendanceData} 
+      />
 
       <div className="mt-6">
-        <AttendanceFilter />
+        <AttendanceFilter 
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
       </div>
 
       <div className="mt-6">
-        <AttendanceTable data={attendanceData} />
+        <AttendanceTable data={filteredData} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
