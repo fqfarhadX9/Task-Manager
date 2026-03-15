@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require("./config/db.js");
@@ -7,7 +7,8 @@ const authRoutes = require('./routes/auth.js')
 const userRoutes = require('./routes/user.route.js');
 const taskRoutes = require('./routes/task.routes.js');
 const commentRoutes = require('./routes/comment.routes.js');
-const eventRoutes = require("./routes/event.routes");
+const eventRoutes = require('./routes/event.routes');
+const attendanceRoutes = require('./routes/attendance.routes.js');
 
 
 dotenv.config(); 
@@ -30,6 +31,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/task", taskRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/event", eventRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 const port = process.env.PORT || 8800;
 

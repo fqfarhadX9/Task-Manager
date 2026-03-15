@@ -1,10 +1,14 @@
-import express from "express";
-import { checkIn, checkOut } from "../controller/attendance.controller.js";
-import protect from "../middleware/authMiddleware.js";
+const express = require("express");
+const { checkIn, checkOut, getTodayAttendance, getAttendanceByDate, getUserMonthlyAttendance } = require("../controller/attendance.controller.js");
+const {protect} =  require("../middleware/authMiddleware.js");
 
 const router = express.Router();
 
 router.post("/checkin", protect, checkIn);
 router.post("/checkout", protect, checkOut);
 
-export default router;
+router.get("/today", protect, getTodayAttendance);
+router.get("/", protect, getAttendanceByDate);
+router.get("/:userId", protect, getUserMonthlyAttendance)
+
+module.exports = router;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const attendanceSchema = new mongoose.Schema({
 
   userId: {
@@ -27,7 +27,7 @@ const attendanceSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["present", "late", "half", "absent"],
+    enum: ["present", "late", "half day", "absent"],
     default: "present"
   }
 

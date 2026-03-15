@@ -1,13 +1,13 @@
-import Attendance from "../../client/src/pages/Attendance";
+const Attendance = require("../model/attendance.js");
 
-export const checkIn = async (req, res) => {
+const checkIn = async (req, res) => {
   try {
 
     const userId = req.user.id;
 
     const now = new Date();
 
-    const today = now.toISOString().split("T")[0];
+    const today = new Date().toLocaleDateString("en-CA");
 
     const existing = await Attendance.findOne({
       userId,
@@ -50,14 +50,14 @@ export const checkIn = async (req, res) => {
   }
 };
 
-export const checkOut = async (req, res) => {
+const checkOut = async (req, res) => {
   try {
 
     const userId = req.user.id;
 
     const now = new Date();
 
-    const today = now.toISOString().split("T")[0];
+    const today = new Date().toLocaleDateString("en-CA");
 
     const attendance = await Attendance.findOne({
       userId,
@@ -86,13 +86,81 @@ export const checkOut = async (req, res) => {
     attendance.hours = Number(hours.toFixed(2));
 
     if (attendance.hours < 6) {
-      attendance.status = "half";
+      attendance.status = "half day";
     }
 
     await attendance.save();
 
     res.json({
       message: "Check out successful",
+      attendance
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
+};
+
+const getAttendanceByDate = async (req, res) => {
+  try {
+
+    const { date } = req.query;
+
+    const attendance = await Attendance.find({ date })
+      .populate("userId", "name");
+
+    res.json({
+      attendance
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
+};
+
+
+const getTodayAttendance = async (req, res) => {
+  try {
+
+    const userId = req.user.id;
+
+    const today = new Date().toLocaleDateString("en-CA");
+
+    const attendance = await Attendance.findOne({
+      userId,
+      date: today
+    });
+
+    res.json({
+      attendance
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
+};
+
+const getUserMonthlyAttendance = async (req, res) => {
+  try {
+
+    const { userId } = req.params;
+    const { month } = req.query;
+
+    const attendance = await Attendance.find({
+      userId,
+      date: { $regex: `^${month}` }
+    });
+
+    res.json({
       attendance
     });
 
@@ -106,7 +174,13 @@ export const checkOut = async (req, res) => {
 
   }
 };
+
+
+
 module.exports = {
     checkIn,
-    checkOut
+    checkOut,
+    getTodayAttendance,
+    getAttendanceByDate,
+    getUserMonthlyAttendance
 }
