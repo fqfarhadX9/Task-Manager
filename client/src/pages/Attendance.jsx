@@ -7,7 +7,7 @@ import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
 import TodayAttendanceCard from "../components/attendance/TodayAttendanceCard";
 import WFHTracker from "../components/attendance/WFHTracker";
 import axios from "../api/axios.js";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useEffect } from "react";
 
 
@@ -15,6 +15,11 @@ export default function Attendance() {
   const [attendanceData, setAttendanceData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem("user"));
+  }, []);
+  const userId = user._id;
 
   const filteredData =
     statusFilter === "all"
@@ -25,7 +30,7 @@ export default function Attendance() {
   const fetchAttendance = async (date=new Date()) => {
       try {
 
-        const formattedDate = date.toISOString().split("T")[0];
+        const formattedDate = date.toLocaleDateString("en-CA");
 
         const res = await axios.get(
           `/attendance?date=${formattedDate}`
@@ -41,7 +46,7 @@ export default function Attendance() {
 
   useEffect(() => {
     fetchAttendance(selectedDate);
-  }, [setSelectedDate])
+  }, [selectedDate])
 
   return (
     <div className="p-6 bg-[#0F172A] min-h-screen text-white">
@@ -67,12 +72,12 @@ export default function Attendance() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <TimeOffRequests />
+        <AttendanceCalendar userId={userId}/>
         <LateArrivalsAnalysis />
       </div>
 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <AttendanceCalendar />
+        <TimeOffRequests />
         <WFHTracker />
        </div>
 
