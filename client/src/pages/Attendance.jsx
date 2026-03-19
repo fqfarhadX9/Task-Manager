@@ -6,6 +6,7 @@ import LateArrivalsAnalysis from "../components/attendance/LateArrivalsAnalysis"
 import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
 import TodayAttendanceCard from "../components/attendance/TodayAttendanceCard";
 import WFHTracker from "../components/attendance/WFHTracker";
+import LateArrivalList from "../components/attendance/LateArrivalList";
 import axios from "../api/axios.js";
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
@@ -73,14 +74,18 @@ export default function Attendance() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
         <AttendanceCalendar userId={userId}/>
+        {user.role === "admin" ? (
         <LateArrivalsAnalysis />
+      ) : (
+        <LateArrivalList />
+      )}
       </div>
 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
         <TimeOffRequests />
         <WFHTracker />
        </div>
-
+       
     </div>
   );
 }
