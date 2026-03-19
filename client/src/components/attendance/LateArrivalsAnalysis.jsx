@@ -70,7 +70,7 @@ export default function LateArrivalsAnalysis() {
           Weekly Overview
         </span>
       </div>
-      {/* Loading */}
+
       {loading ? (
         <p className="text-gray-400 text-sm">Loading analytics...</p>
       ) : (
