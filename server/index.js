@@ -9,6 +9,7 @@ const taskRoutes = require('./routes/task.routes.js');
 const commentRoutes = require('./routes/comment.routes.js');
 const eventRoutes = require('./routes/event.routes');
 const attendanceRoutes = require('./routes/attendance.routes.js');
+const timeOffRoutes = require('./routes/TimeOffRequestsRoutes.js');
 
 
 dotenv.config(); 
@@ -32,6 +33,7 @@ app.use("/api/task", taskRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/timeoff", timeOffRoutes);
 
 const port = process.env.PORT || 8800;
 

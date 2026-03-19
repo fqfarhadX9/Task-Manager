@@ -20,13 +20,15 @@ const checkIn = async (req, res) => {
       });
     }
 
-    const officeTime = new Date();
-    officeTime.setHours(9, 0, 0, 0);
+    const officeTime = new Date(now);
+    officeTime.setHours(9, 5, 0, 0);
 
     let status = "present";
+    let lateMinutes = 0; 
 
     if (now > officeTime) {
       status = "late";
+      lateMinutes = Math.floor((now - officeTime) / 60000);
     }
 
     const attendance = await Attendance.create({
@@ -34,6 +36,7 @@ const checkIn = async (req, res) => {
       date: today,
       checkIn: now,
       status,
+      lateMinutes
     });
 
     res.status(201).json({
@@ -175,12 +178,36 @@ const getUserMonthlyAttendance = async (req, res) => {
   }
 };
 
+const getLateArrivals = async (req, res) => {
+  try {
 
+    let query = { status: "late" };
+
+    if (req.user.role === "user") {
+      query.userId = req.user.id;
+    }
+
+    const records = await Attendance.find(query)
+      .populate("userId", "name")
+      .sort({ date: -1 });
+
+    res.json({
+      lateArrivals: records
+    });
+
+  } catch (error) {
+    console.error("Error fetching late arrivals:", error);
+    res.status(500).json({
+      message: "Server error"
+    });
+  }
+};
 
 module.exports = {
     checkIn,
     checkOut,
     getTodayAttendance,
     getAttendanceByDate,
-    getUserMonthlyAttendance
+    getUserMonthlyAttendance,
+    getLateArrivals
 }
