@@ -9,7 +9,7 @@ router.post("/checkout", protect, checkOut);
 
 router.get("/today", protect, getTodayAttendance);
 router.get("/", protect, getAttendanceByDate);
-router.post("/", protect, updateWFHShedule);
+router.post("/mode", protect, updateWFHShedule);
 // all users weekly (admin)
 router.get("/week/all", getAllUsersWFH);
 router.get("/late-arrivals", protect, getLateArrivals);

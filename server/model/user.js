@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    shedule : {
+      type: String,
+      enum: ["office", "remote"],
+      required: true
+    }
   },
   {
     timestamps: true,
