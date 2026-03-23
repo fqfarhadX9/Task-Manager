@@ -37,7 +37,7 @@ export default function Sidebar({ sidebarOpen }) {
         <SidebarItem icon={<CheckSquare size={18} />} label="Tasks" active />
         <SidebarItem icon={<Calendar size={18} />} label="Calendar" active/>
         <SidebarItem icon={<Clock4 size={18} />} label="Attendance" active/>
-        <SidebarItem icon={<MessageSquare size={18} />} label="Messages" />
+        <SidebarItem icon={<MessageSquare size={18} />} label="Messages" active/>
       </nav>
 
       <div className="px-4 py-4 border-t border-[#1F2937]">

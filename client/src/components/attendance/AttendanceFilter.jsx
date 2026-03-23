@@ -9,7 +9,7 @@ export default function AttendanceFilter({ statusFilter, setStatusFilter }) {
       <option value="present">Present</option>
       <option value="late">Late</option>
       <option value="absent">Absent</option>
-      <option value="half">Half Day</option>
+      <option value="half day">Half Day</option>
     </select>
   );
 }

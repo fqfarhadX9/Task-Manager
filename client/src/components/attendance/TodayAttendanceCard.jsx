@@ -51,7 +51,7 @@ export default function TodayAttendanceCard({refreshAttendance}) {
       {!attendance && (
         <button
           onClick={handleCheckIn}
-          className="bg-green-500 px-5 py-2 rounded-lg"
+          className="bg-green-500 hover:bg-green-600 px-5 py-2 rounded-lg"
         >
           Check In
         </button>
@@ -60,7 +60,7 @@ export default function TodayAttendanceCard({refreshAttendance}) {
       {attendance && !attendance.checkOut && (
         <button
           onClick={handleCheckOut}
-          className="bg-red-500 px-5 py-2 rounded-lg"
+          className="bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-lg"
         >
           Check Out
         </button>

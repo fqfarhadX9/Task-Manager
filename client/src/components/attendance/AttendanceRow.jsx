@@ -25,7 +25,7 @@ export default function AttendanceRow({ item }) {
       <td className="p-4">{item.userId?.name}</td>
       <td className="p-4 text-gray-400">{item.date}</td>
       <td className="p-4">{new Date(item.checkIn).toLocaleTimeString()}</td>
-      <td className="p-4">{new Date(item.checkOut).toLocaleTimeString()}</td>
+      <td className="p-4 ml-4">{item.checkOut ? new Date(item.checkOut).toLocaleTimeString(): "- - -"}</td>
 
       <td className="p-4">
         <span
