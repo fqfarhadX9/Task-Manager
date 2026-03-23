@@ -4,7 +4,6 @@ import AttendanceTable from "../components/attendance/AttendanceTable";
 import TimeOffRequests from "../components/attendance/TimeOffRequests";
 import LateArrivalsAnalysis from "../components/attendance/LateArrivalsAnalysis";
 import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
-import TodayAttendanceCard from "../components/attendance/TodayAttendanceCard";
 import WFHTracker from "../components/attendance/WFHTracker";
 import LateArrivalList from "../components/attendance/LateArrivalList";
 import axios from "../api/axios.js";
@@ -51,14 +50,9 @@ export default function Attendance() {
 
   return (
     <div className="p-6 bg-[#0F172A] min-h-screen text-white">
-       <div className="mt-6">
-        <TodayAttendanceCard 
-          refreshAttendance={fetchAttendance} 
-        />
-      </div>
-
       <AttendanceHeader 
         attendanceData={attendanceData} 
+        refreshAttendance={fetchAttendance}
       />
 
       <div className="mt-6">
