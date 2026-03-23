@@ -1,3 +1,4 @@
+const User = require("../model/user.js");
 const Attendance = require("../model/attendance.js");
 
 const checkIn = async (req, res) => {
@@ -203,11 +204,42 @@ const getLateArrivals = async (req, res) => {
   }
 };
 
+const updateWFHShedule = async (req, res) => {
+  const { userId, shedule } = req.body;
+
+  await User.findByIdAndUpdate(userId, {
+    shedule: shedule},
+    {new: true}
+  );
+
+  res.json({ message: "Updated" });
+};
+
+const getAllUsersWFH = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    const data = users.map((user) => ({
+      userId: user._id,
+      name: user.name,
+      profile: user.profileImageUrl,
+      shedule: user.shedule,
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    }));
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
     checkIn,
     checkOut,
     getTodayAttendance,
     getAttendanceByDate,
     getUserMonthlyAttendance,
-    getLateArrivals
+    getLateArrivals,
+    updateWFHShedule,
+    getAllUsersWFH
 }

@@ -34,7 +34,7 @@ const attendanceSchema = new mongoose.Schema({
   lateMinutes: {
     type: Number,
     default: 0
-}
+  },
 }, { timestamps: true });
 
 const Attendance = mongoose.model("Attendance", attendanceSchema);
