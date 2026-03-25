@@ -9,9 +9,7 @@ export default function CalendarPage() {
     const [events, setEvents] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    useEffect(() => {
-
-      const fetchEvents = async () => {
+    const fetchEvents = async () => {
         try {
 
           const today = new Date();
@@ -29,6 +27,7 @@ export default function CalendarPage() {
         }
       };
 
+    useEffect(() => {
       fetchEvents();
 
     }, [currentDate]);
@@ -44,7 +43,7 @@ export default function CalendarPage() {
         <CalendarGrid events={events} currentDate={currentDate}/>
       </div>
 
-      <UpcomingEvents events={events}/>
+      <UpcomingEvents events={events} fetchEvents={fetchEvents}/>
 
     </div>
   );
