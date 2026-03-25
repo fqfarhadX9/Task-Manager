@@ -1,6 +1,6 @@
-import { Clock, Pencil } from "lucide-react";
+import { Clock, Pencil, Trash2} from "lucide-react";
 
-export default function EventCard({ event }) {
+export default function EventCard({ event, onEdit, onDelete }) {
 
   const colorMap = {
     green: "bg-green-900 text-green-400",
@@ -50,9 +50,20 @@ export default function EventCard({ event }) {
 
       </div>
 
-      <button className="flex items-center gap-1 border border-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-800">
+      <button 
+        onClick={() => onEdit(event)}
+        className="flex items-center gap-1 border border-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-800"
+      >
         <Pencil size={14} />
         Edit
+      </button>
+
+      <button 
+        onClick={() => onDelete(event._id)}
+        className="flex items-center gap-1 border border-red-700 text-red-400 px-3 py-1 rounded-md text-sm hover:bg-red-900/30"
+      >
+        <Trash2 size={16} />
+        Delete
       </button>
 
     </div>
