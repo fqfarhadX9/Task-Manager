@@ -15,6 +15,10 @@ const createEvent = async (req, res) => {
         .json({ message: "End date cannot be before start date" });
     }
 
+    if(req.role != "admin") {
+       return res.status(403).json({ message: "Not allowed" });
+    }
+
     const event = await Event.create({
       title,
       description,
