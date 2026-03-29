@@ -1,40 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios.js"
 
-// const attendanceData = {
-//   1: "absent",
-//   2: "present",
-//   3: "late",
-//   4: "present",
-//   5: "present",
-//   6: "present",
-//   7: "present",
-//   8: "absent",
-//   9: "present",
-//   10: "half",
-//   11: "present",
-//   12: "half",
-//   13: "present",
-//   14: "absent",
-//   15: "absent",
-//   16: "absent",
-//   17: "late",
-//   18: "present",
-//   19: "present",
-//   20: "late",
-//   21: "half",
-//   22: "absent",
-//   23: "present",
-//   24: "present",
-//   25: "present",
-//   26: "present",
-//   27: "present",
-//   28: "half",
-//   29: "absent",
-//   30: "present",
-//   31: "present",
-// };
-
 const statusColor = {
   present: "bg-green-500/20 text-green-400",
   late: "bg-orange-500/20 text-orange-400",
@@ -69,21 +35,21 @@ const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     }, [month, userId]);
 
   return (
-    <div className="bg-[#020817] border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#020817] border border-gray-800 rounded-xl sm:p-4 md:p-6">
 
-      <div className="flex justify-between mb-6">
-        <h2 className="text-lg font-semibold">Calendar</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+        <h2 className="text-base md:text-lg font-semibold">Calendar</h2>
 
-        <div className="flex items-center gap-4">
-          <button>{"<"}</button>
-          <span className="bg-[#0F172A] px-3 py-1 rounded-md">
+        <div className="flex items-center justify-between sm:justify-end gap-4">
+          <button className="px-2 py-1 bg-[#0F172A] rounded">{"<"}</button>
+          <span className="bg-[#0F172A] px-3 py-1 rounded-md text-xs md:text-sm">
             Mar 2026
           </span>
-          <button>{">"}</button>
+          <button className="px-2 py-1 bg-[#0F172A] rounded">{">"}</button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 text-sm text-gray-400 mb-3">
+      <div className="grid grid-cols-7 text-[10px] md:text-sm sm:text-xs text-gray-400 mb-2 md:mb-3">
         <span>SUN</span>
         <span>MON</span>
         <span>TUE</span>
@@ -93,7 +59,7 @@ const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
         <span>SAT</span>
       </div>
 
-      <div className="grid grid-cols-7 gap-3">
+      <div className="grid grid-cols-7 gap-1 md:gap-3 sm:gap-2">
         {days.map((day) => {
           const record = attendance.find((a) => {
             return new Date(a.date).getDate() === day;
@@ -104,13 +70,13 @@ const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
           return (
             <div
               key={day}
-              className="border border-gray-800 rounded-lg p-3 h-20 flex flex-col justify-between"
+              className="border border-gray-800 rounded-lg p-1.5 sm:p-2 md:p-3 h-14 sm:h-16 md:h-20 flex flex-col justify-between"
             >
-              <span className="text-sm">{day}</span>
+              <span className="text-[10px] sm:text-xs md:text-sm">{day}</span>
 
               {status && (
                 <span
-                  className={`text-xs px-2 py-1 rounded-md w-12 truncate ${statusColor[status]}`}
+                  className={`text-[9px] sm:text-[10px] md:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md w-fit truncate ${statusColor[status]}`}
                 >
                   {status}
                 </span>
@@ -120,24 +86,23 @@ const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-6 mt-6 text-sm">
-        <span className="flex items-center gap-2">
+      <div className="flex gap-3 sm:gap-4 md:gap-6 mt-6  text-xs sm:text-sm">
+        <span className="flex items-center gap-1.5 sm:gap-2">
           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
           Present
         </span>
 
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-1.5 sm:gap-2">
           <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
           Late
         </span>
 
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-1.5 sm:gap-2">
           <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
           Half Day
         </span>
 
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-1.5 sm:gap-2">
           <span className="w-3 h-3 bg-red-500 rounded-full"></span>
           Absent
         </span>
