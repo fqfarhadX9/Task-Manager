@@ -1,11 +1,6 @@
 export default function AttendanceFilter({ statusFilter, setStatusFilter }) {
   return (
     <div className="w-full sm:w-auto">
-
-      <label className="block text-xs text-gray-400 mb-1 sm:hidden">
-        Filter by Status
-      </label>
-
       <select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
