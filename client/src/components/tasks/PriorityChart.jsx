@@ -11,57 +11,49 @@ export default function PriorityChart({ data = [] }) {
   const totalTasks = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <div className="bg-[#0F172A] p-6 rounded-xl border border-gray-800">
+    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
 
-      <h2 className="text-lg font-semibold mb-4">
+      {/* Header */}
+      <h2 className="text-base sm:text-lg font-semibold mb-4">
         Priority Distribution
       </h2>
 
-      <div className="relative h-60">
+      <div className="relative h-52 sm:h-60">
 
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-
             <Pie
               data={data}
-              innerRadius={70}
-              outerRadius={90}
-              paddingAngle={4}
+              innerRadius={50}
+              outerRadius={70}
+              paddingAngle={3}
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[entry.name]}
-                />
+                <Cell key={index} fill={COLORS[entry.name]} />
               ))}
             </Pie>
-
           </PieChart>
         </ResponsiveContainer>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-
-          <p className="text-3xl font-bold">
+          <p className="text-xl sm:text-3xl font-bold">
             {totalTasks}
           </p>
-
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-xs sm:text-sm">
             Total Tasks
           </p>
-
         </div>
 
       </div>
 
-      <div className="flex justify-around mt-4 text-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-around gap-2 sm:gap-0 mt-4 text-xs sm:text-sm">
 
         {data.map((item) => (
-
           <div key={item.name} className="flex items-center gap-2">
 
             <span
-              className="w-3 h-3 rounded-full"
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full"
               style={{ background: COLORS[item.name] }}
             ></span>
 
@@ -74,7 +66,6 @@ export default function PriorityChart({ data = [] }) {
             </span>
 
           </div>
-
         ))}
 
       </div>
