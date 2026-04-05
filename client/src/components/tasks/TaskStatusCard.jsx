@@ -1,4 +1,4 @@
-export default function TaskStatusCard({ task }) {
+export default function TaskStatusCard({ task, handleEdit, handleComplete, error }) {
 
   const priorityColor = {
     high: "bg-red-500",
@@ -57,54 +57,93 @@ export default function TaskStatusCard({ task }) {
     dueLabel = dueDate.toLocaleDateString();
   
   }
+
   return (
 
-    <div className="bg-[#0F172A] border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#0F172A] border border-gray-800 rounded-xl p-4 sm:p-6">
 
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
 
         <div className="flex items-center gap-2">
 
           <span
-            className={`w-3 h-3 rounded-full ${priorityColor[task.priority]}`}
+            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${priorityColor[task.priority]}`}
           ></span>
 
-          <h3 className="font-semibold text-lg">
+          <h3 className="font-semibold text-base sm:text-lg">
             {task.title}
           </h3>
 
         </div>
 
-        <div className="flex gap-3">
+        <div className="hidden sm:flex gap-2">
 
-          <button className="border border-gray-700 px-3 py-1 rounded-lg text-sm">
-            Edit
+          <button 
+            onClick={() => handleEdit(task)}
+            className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+              Edit
           </button>
 
-          <button className="border border-gray-700 px-3 py-1 rounded-lg text-sm">
-            Complete
+          <button 
+            onClick={() => handleComplete(task)}
+            className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+              Complete
           </button>
 
         </div>
 
       </div>
 
-      <p className="text-gray-400 text-sm truncate mt-1 mb-3">
+      <p className="text-gray-400 text-xs sm:text-sm line-clamp-2 mb-3">
         {task.description}
       </p>
 
-      <p className="text-sm text-gray-400">
-        Assigned to: {task.assignedTo?.length
-        ? task.assignedTo.map((item, i) => (
-          <span key={i}>
-            {item.name}{i !== task.assignedTo.length - 1 && ", "}
-          </span>
-        ))
-        : "Unassigned"} • Due: {dueLabel}
-        <span className={`ml-3 ${statusColor[status]}`}>
+      <p className="hidden sm:block text-xs text-gray-400 leading-relaxed">
+        Assigned to: {" "}
+        {task.assignedTo?.length
+        ? `Team Member ${task.assignedTo.length}`
+        : "Team Memer 0"} 
+        • Due: {dueLabel}
+        <span className={`ml-2 sm:ml-3 font-medium ${statusColor[status]}`}>
           {status}
         </span>
       </p>
+
+      <div className="sm:hidden text-[10.5px] text-gray-400 leading-relaxed space-y-1">
+        <p>
+          Assigned to: {" "}
+          {task.assignedTo?.length
+          ? `Team Member ${task.assignedTo.length}`
+          : "Team Memer 0"} 
+        </p>
+
+        <div className="flex justify-between items-center w-full pr-4">
+          <span>Due: {dueLabel}</span> 
+          <span className={`font-medium ${statusColor[status]}`}>
+          {status}
+        </span>
+        </div>
+      </div>
+
+      <div className="flex gap-2 sm:hidden mt-3">
+        <button
+          onClick={() => handleEdit(task)} 
+          className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+            Edit
+        </button>
+
+        <button
+          onClick={() => handleComplete(task)} 
+          className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+            Complete
+          </button>
+      </div>
+
+      {error && (
+        <p className="text-red-400 text-xs mt-2">
+          ⚠ {error}
+        </p>
+      )}
 
     </div>
 
