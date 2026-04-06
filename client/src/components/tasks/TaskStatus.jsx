@@ -49,7 +49,13 @@ export default function TaskStatus({fetchDashboard, filteredTasks}) {
           <p className="text-gray-400">No tasks found for the search query.</p>
         ) : (
         filteredTasks.map((task, index) => (
-          <TaskStatusCard key={index} task={task} handleEdit={handleEdit} handleComplete={handleComplete} error={error[task._id]}/>
+          <TaskStatusCard 
+            key={index} 
+            task={task} 
+            handleEdit={handleEdit} 
+            handleComplete={handleComplete} 
+            error={error[task._id]}
+          />
         ))
       )}
 
