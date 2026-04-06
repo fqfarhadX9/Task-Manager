@@ -6,20 +6,38 @@ import TeamWorkload from "../components/tasks/TeamWorkload";
 import UpcomingDeadlines from "../components/tasks/UpcomingDeadlines";
 import TaskCalendar from "../components/tasks/TaskCalendar";
 import TaskStatus from "../components/tasks/TaskStatus";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import axios from "../api/axios.js";
 
 export default function TaskPage() {
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [dashboard, setDashboard] = useState(null)
+  const [dashboard, setDashboard] = useState(null);
+
+  const taskStatusRef = useRef(null);
+
+  const filteredTasks = dashboard?.taskStatusTasks.filter(task => {
+    const query = search.toLowerCase();
+    return task.title?.toLowerCase().includes(query) || 
+    task.description?.toLowerCase().includes(query);
+  });
+  
+  useEffect(() => {
+    if (search && taskStatusRef.current) {
+      taskStatusRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, [search]);
+
+  const fetchDashboard = async () => {
+    const {data} = await axios.get("/task/task-dashboard");
+    setDashboard(data);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchDashboard = async () => {
-      const {data} = await axios.get("/task/task-dashboard");
-      setDashboard(data);
-      setLoading(false);
-    };
-
     fetchDashboard();
   }, []);
 
@@ -28,33 +46,43 @@ export default function TaskPage() {
   }
 
   return (
-    <div className="p-6 text-white">
+    <div className="p-4 sm:p-6 text-white">
 
-      <TaskHeader />
+      <TaskHeader search={search} setSearch={setSearch} />
 
-      <TaskStats stats={dashboard.stats}/>
+      {search ? (
+        <div className="mt-6" ref={taskStatusRef}>
+          <TaskStatus fetchDashboard={fetchDashboard} filteredTasks={filteredTasks}/>   
+        </div>
+      ) : (
+        <>
+           <div className="mt-6">
+            <TaskStats stats={dashboard.stats} />
+          </div>
 
-      <div className="grid grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
 
-        <PriorityChart data={dashboard.priorityDistribution}/>
+            <PriorityChart data={dashboard.priorityDistribution}/>
 
-        <TaskCategories data={dashboard.taskCategories}/>
+            <TaskCategories data={dashboard.taskCategories}/>
 
-        <TeamWorkload data={dashboard.teamWorkload}/>
+            <TeamWorkload data={dashboard.teamWorkload}/>
 
-      </div>
+          </div>
 
-      <div className="grid grid-cols-2 gap-6 mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
 
-        <UpcomingDeadlines data={dashboard.upcomingDeadlines}/>
+            <UpcomingDeadlines data={dashboard.upcomingDeadlines}/>
 
-        <TaskCalendar data={dashboard.calendarTasks}/>
+            <TaskCalendar data={dashboard.calendarTasks}/>
 
-      </div>
+          </div>
 
-      <div className=" mt-8">
-        <TaskStatus data={dashboard.taskStatusTasks}/>
-      </div>
+          <div className=" mt-8">
+            <TaskStatus fetchDashboard={fetchDashboard} filteredTasks={filteredTasks}/>
+          </div>
+        </>
+      )}
 
     </div>
   );
