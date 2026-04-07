@@ -23,14 +23,12 @@ const MembersHeader = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-      {/* TITLE */}
       <h1 className="text-3xl font-semibold text-white">
         Team Members
       </h1>
 
       <div className="flex items-center gap-3">
 
-        {/* SEARCH */}
         <div className="relative">
           <Search
             size={18}
@@ -42,16 +40,15 @@ const MembersHeader = ({
             placeholder="Search members..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-[#1F2937] border border-gray-700 text-sm text-white rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-[#0F172A] border border-gray-700 text-sm text-white rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* FILTER */}
         <div className="relative">
 
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-2 bg-[#1F2937] border border-gray-700 px-3 py-2 rounded-lg hover:bg-gray-800 transition"
+            className="flex items-center gap-2 bg-[#0F172A] border border-gray-700 px-3 py-2 rounded-lg transition"
           >
             <Filter size={16} />
             Filter
