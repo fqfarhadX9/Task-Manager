@@ -2,42 +2,55 @@ export default function TaskCategories({ data = [] }) {
 
   const totalTasks = data.reduce((sum, item) => sum + item.tasks, 0);
 
-  return (
-    <div className="bg-[#0F172A] p-6 rounded-xl border border-gray-800">
+  const colorMap = {
+    development: "bg-blue-500",
+    design: "bg-purple-500",
+    marketing: "bg-pink-500",
+    research: "bg-green-500",
+    testing: "bg-yellow-500",
+    default: "bg-gray-500"
+  };
 
-      <h2 className="text-lg font-semibold mb-6">
+  return (
+    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+
+      <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">
         Task Categories
       </h2>
 
       {data.map((cat, index) => {
 
-        const percent = Math.round((cat.tasks / totalTasks) * 100);
+        const percent = totalTasks
+          ? Math.round((cat.tasks / totalTasks) * 100)
+          : 0;
+
+        const key = cat?.name?.toLowerCase();
+
+        const barColor = colorMap[key] || colorMap.default;
 
         return (
+          <div key={index} className="mb-4 sm:mb-5">
 
-          <div key={index} className="mb-5">
+            <div className="flex justify-between items-center mb-1 text-sm sm:text-base">
 
-            <div className="flex justify-between mb-1">
+              <span className="capitalize">{cat.name}</span>
 
-              <span>{cat.name}</span>
-
-              <span className="text-gray-400 text-sm">
-                {percent}% ({cat.tasks})
+              <span className="text-gray-400 text-xs sm:text-sm">
+                {cat.tasks} ({percent}%)
               </span>
 
             </div>
 
-            <div className="w-full bg-gray-800 h-2 rounded">
+            <div className="w-full bg-gray-800 h-2 rounded overflow-hidden">
 
               <div
-                className="bg-blue-500 h-2 rounded"
+                className={`${barColor} h-2 rounded transition-all duration-300`}
                 style={{ width: `${percent}%` }}
               ></div>
 
             </div>
 
           </div>
-
         );
 
       })}
