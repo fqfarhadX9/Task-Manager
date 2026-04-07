@@ -26,6 +26,7 @@ const {
   clearActivity,
   getProjectAnalytics,
   getTaskDashboardData,
+  getUserAllAssignedTasks,
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
@@ -50,5 +51,6 @@ router.get("/task-dashboard", protect, getTaskDashboardData)
 router.put("/:taskId/activity/clear", protect, clearActivity);
 router.get("/analytics", protect, getProjectAnalytics);
 router.get("/:id", protect, getSingleTask);
+router.get("/tasks/user/:id", protect, getUserAllAssignedTasks)
 
 module.exports = router;

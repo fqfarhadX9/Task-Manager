@@ -1156,6 +1156,27 @@ const getProjectAnalytics = async (req, res) => {
   }
 };
 
+const getUserAllAssignedTasks = async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const tasks = await Task.find({
+      assignedTo: id,
+      isDeleted: false
+    })
+    .select("title status progress")
+    .sort({ createdAt: -1 });
+
+    res.status(200).json({ 
+      success: true,
+      projects: tasks 
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Server Error" });
+  }
+}
+
 
 module.exports = {
   createTask,
@@ -1179,5 +1200,6 @@ module.exports = {
   deleteSubtask,
   getTaskDashboardData,
   clearActivity,
-  getProjectAnalytics
+  getProjectAnalytics,
+  getUserAllAssignedTasks
 };

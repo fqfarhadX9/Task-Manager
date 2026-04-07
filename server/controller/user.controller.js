@@ -1,4 +1,5 @@
 const User = require("../model/user");
+const bcrypt = require("bcryptjs");
 
 // const getAllUsers = async (req, res) => {
 //   try {
@@ -76,10 +77,14 @@ const createUser = async (req, res) => {
       role,
       position,
       isActive,
-      bio
+      shedule,
+      skills, 
+      bio,
+      phone,
+      location
     } = req.body;
 
-    if(!name || !email || !role || !position || !isActive) {
+    if(!name || !email || !role || !position || !shedule || !skills) {
       return res.status(400).json({
         success: false,
         message: "All fields are required except bio"
@@ -94,19 +99,28 @@ const createUser = async (req, res) => {
       });
     }
 
+    const hashedpassword = await bcrypt.hash("1234567", 10);
+
     const user = await User.create({
       name,
       email,
-      password: "1234567",
+      password: hashedpassword,
       role,
       position,
       isActive,
+      shedule,
+      skills,
       bio,
+      phone,
+      location
     });
+    
+    const {password, ...safeUser} = user.toObject();
 
     res.status(201).json({
       success: true,
-      user
+      user: safeUser,
+      message: "User created successfully"
     });
 
   } catch (error) {
@@ -136,7 +150,7 @@ const updateUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "User updated successfully",
-      user,
+      updatedUser: user
     });
 
   } catch (error) {

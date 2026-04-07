@@ -39,21 +39,45 @@ const userSchema = new mongoose.Schema(
       default: "Member",
     },
 
+    skills: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        level: {
+          type: Number,
+          min: 0,
+          max: 100,
+          default: 50,
+        }
+      }
+    ],
+
     bio: {
       type: String,
       default: "",
     },
 
-    isActive: {
-      type: Boolean,
-      default: true,
+    status: {
+      type: String,
+      enum: ["active", "away"],
+      default: "active"
     },
 
     shedule : {
       type: String,
       enum: ["office", "remote"],
       required: true
-    }
+    },
+
+    phone: {
+      type: String,
+    },
+
+    location: {
+      type: String,
+    },
   },
   {
     timestamps: true,
