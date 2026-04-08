@@ -3,6 +3,7 @@ const tabs = [
   { label: "Developers", value: "developer" },
   { label: "Designers", value: "designer" },
   { label: "Marketers", value: "marketer" },
+  { label: "Tester", value: "tester" },
 ];
 
 const MembersTabs = ({ positionFilter, setPositionFilter }) => {
