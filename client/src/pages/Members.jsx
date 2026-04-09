@@ -5,6 +5,7 @@ import MembersPagination from "../components/members/MembersPagination";
 import { useEffect, useState } from "react";
 import axios from "../api/axios.js";
 import MemberDetailsModal from "../components/members/MemberDetailsModal.jsx";
+import EditMemberModal from "../components/members/EditMemberModal.jsx";
 
 const Members = () => {
     const [users, setUsers] = useState([]);
@@ -17,6 +18,8 @@ const Members = () => {
     const [showAddMember, setShowAddMember] = useState(false);
     const [positionFilter, setPositionFilter] = useState("all");
     const [selectedMember, setSelectedMember] = useState(null);
+    const [editMember, setEditMember] = useState(null);
+    
 
     const fetchMembers = async () => {
         try {
@@ -42,7 +45,7 @@ const Members = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 p-6">
 
-      {/* PAGE TITLE + SEARCH + ADD BTN */}
+      {/* PAGE TITLE + SEARCH&FILTER + ADD BTN */}
       <MembersHeader 
         search={search} 
         setSearch={setSearch}  
@@ -83,7 +86,22 @@ const Members = () => {
       {selectedMember && (
         <MemberDetailsModal
           member={selectedMember}
+          setEditMember={setEditMember}
           onClose={() => setSelectedMember(null)}
+        />
+      )}
+
+      {editMember && (
+        <EditMemberModal 
+          member={editMember}
+          onClose={(updatedmember) => {
+            setEditMember(null)
+
+            if(updatedmember) {
+              setSelectedMember(updatedmember);
+            }
+          }}
+          refresh={fetchMembers}
         />
       )}
 
