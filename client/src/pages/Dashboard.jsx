@@ -81,25 +81,25 @@ useEffect(() => {
     );
   }  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100">
+    <div className="min-h-screen bg-blue-50 dark:bg-[#020818] text-gray-100">
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="pt-10 pb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-b border-gray-800">
+        <div className="pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-white">
+            <h2 className="text-3xl font-semibold tracking-tight text-black dark:text-white">
               Dashboard
             </h2>
-            <p className="text-gray-400 text-sm mt-2">
+            <p className="text-gray-800 dark:text-gray-300 text-sm mt-2">
               Manage and track your tasks efficiently
             </p>
           </div>
 
           <button
             onClick={() => setOpen(true)}
-            className="bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200 shadow-md w-full sm:w-auto"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md w-full sm:w-auto"
           >
             + Create Task
           </button>
@@ -149,7 +149,7 @@ useEffect(() => {
         </div>
 
         {/* Filters Section */}
-        <div className="mt-10 bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-2xl p-4 sm:p-6">
+        <div className="mt-10 bg-white dark:bg-[#020617] backdrop-blur-sm border border-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6">
   
           <div className="flex flex-col lg:flex-row gap-4 lg:items-center">
 
@@ -159,7 +159,7 @@ useEffect(() => {
                 placeholder="Search tasks..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-5 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition-all"
+                className="w-full px-5 py-3 rounded-xl bg-gray-300 dark:bg-gray-900 border border-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition-all"
               />
             </div>
 
@@ -169,7 +169,7 @@ useEffect(() => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-5 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition w-full sm:w-auto"
+                className="px-5 py-3 rounded-xl bg-gray-300 dark:bg-gray-900 border border-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition w-full sm:w-auto"
               >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
@@ -180,7 +180,7 @@ useEffect(() => {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="px-5 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition w-full sm:w-auto"
+                className="px-5 py-3 rounded-xl bg-gray-300 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition w-full sm:w-auto"
               >
                 <option value="">All Priority</option>
                 <option value="low">Low</option>

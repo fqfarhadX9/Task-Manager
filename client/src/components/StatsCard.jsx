@@ -1,11 +1,10 @@
 const StatsCard = ({ title, value, icon, color }) => {
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-xl p-5 hover:shadow-lg transition duration-300">
-      
+    <div className="bg-white dark:bg-[#020617] border border-gray-200 dark:border-[#1F2937] rounded-xl p-5 hover:shadow-lg transition duration-300">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-400">{title}</p>
-          <h2 className="text-2xl font-bold text-white mt-1">
+          <p className="text-xl text-black dark:text-gray-200">{title}</p>
+          <h2 className="text-2xl font-bold text-black dark:text-white mt-1">
             {value}
           </h2>
         </div>
