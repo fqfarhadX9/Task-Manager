@@ -46,7 +46,7 @@ export default function DeadlineItem({ task }) {
 
   return (
 
-    <div className="flex justify-between items-start sm:items-center bg-[#020817] p-3 sm:p-4 rounded-lg gap-3">
+    <div className="flex justify-between items-start sm:items-centerborder border-gray-100 dark:border-gray-800 p-3 sm:p-4 rounded-lg gap-3">
 
       <div className="flex gap-3">
 
@@ -56,7 +56,7 @@ export default function DeadlineItem({ task }) {
 
         <div>
 
-          <p className="font-medium text-sm sm:text-base">
+          <p className="font-medium text-sm sm:text-base text-black dark:text-white">
             {task.title}
           </p>
 

@@ -60,7 +60,7 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
 
   return (
 
-    <div className="bg-[#0F172A] border border-gray-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 rounded-xl p-4 sm:p-6">
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
 
@@ -70,7 +70,7 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
             className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${priorityColor[task.priority]}`}
           ></span>
 
-          <h3 className="font-semibold text-base sm:text-lg">
+          <h3 className="font-semibold text-base sm:text-lg text-black dark:text-white">
             {task.title}
           </h3>
 
@@ -80,13 +80,13 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
 
           <button 
             onClick={() => handleEdit(task)}
-            className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+            className="border border-gray-200 dark:border-gray-700 text-black dark:text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm dark:hover:bg-gray-800">
               Edit
           </button>
 
           <button 
             onClick={() => handleComplete(task)}
-            className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+            className="bg-blue-500 border border-gray-200 dark:border-gray-700 text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-blue-600">
               Complete
           </button>
 
@@ -128,13 +128,13 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
       <div className="flex gap-2 sm:hidden mt-3">
         <button
           onClick={() => handleEdit(task)} 
-          className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+          className="border border-gray-200 dark:border-gray-700 text-black dark:text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm dark:hover:bg-gray-800">
             Edit
         </button>
 
         <button
           onClick={() => handleComplete(task)} 
-          className="border border-gray-700 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-gray-800">
+          className="bg-blue-500 border border-gray-200 dark:border-gray-700 text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-blue-600">
             Complete
           </button>
       </div>

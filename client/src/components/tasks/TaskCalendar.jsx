@@ -28,23 +28,23 @@ export default function TaskCalendar({ data = [] }) {
   });
 
   return (
-    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
 
         <div className="flex items-center gap-2">
           <CalendarDays size={18} className="text-blue-500" />
 
-          <h2 className="text-base sm:text-lg font-semibold">
+          <h2 className="text-base sm:text-lg font-semibold text-black dark:text-white">
             Task Calendar
           </h2>
         </div>
 
-        <div className="flex items-center justify-between sm:justify-end gap-3 text-gray-300 w-full sm:w-auto">
+        <div className="flex items-center justify-between sm:justify-end gap-3 text-gray-400 w-full sm:w-auto">
 
           <button
             onClick={prevMonth}
-            className="px-2 py-1 rounded hover:bg-gray-800"
+            className="px-2 py-1 rounded dark:hover:bg-gray-800"
           >
             ‹
           </button>
@@ -55,7 +55,7 @@ export default function TaskCalendar({ data = [] }) {
 
           <button
             onClick={nextMonth}
-            className="px-2 py-1 rounded hover:bg-gray-800"
+            className="px-2 py-1 rounded dark:hover:bg-gray-800"
           >
             ›
           </button>

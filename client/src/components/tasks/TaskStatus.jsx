@@ -38,9 +38,9 @@ export default function TaskStatus({fetchDashboard, filteredTasks}) {
 
     <div className="mt-6 sm:mt-8">
 
-      <div className="bg-[#0F172A] rounded-xl border border-gray-800 bg-card p-4 sm:p-6">
+      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 rounded-xl bg-card p-4 sm:p-6">
 
-      <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-black dark:text-white">
         Task Status
       </h2>
 
@@ -48,7 +48,7 @@ export default function TaskStatus({fetchDashboard, filteredTasks}) {
         {filteredTasks?.length === 0 ? (
           <p className="text-gray-400">No tasks found for the search query.</p>
         ) : (
-        filteredTasks.map((task, index) => (
+        filteredTasks?.map((task, index) => (
           <TaskStatusCard 
             key={index} 
             task={task} 

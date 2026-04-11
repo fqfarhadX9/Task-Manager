@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 export default function UpcomingDeadlines({ data = [] }) {
   return (
 
-    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
       <div className="flex  justify-between items-center mb-4 sm:mb-6">
 
-        <h2 className="text-base sm:text-lg font-semibold">
+        <h2 className="text-base sm:text-lg font-semibold text-black dark:text-white">
           Upcoming Deadlines
         </h2>
 
