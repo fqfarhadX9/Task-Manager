@@ -19,18 +19,18 @@ export default function AnalyticsSection({ analytics }) {
   const total = analytics.total || 0;
 
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-[#020617] border border-gray-200 dark:border-[#1F2937] rounded-2xl p-6 h-full">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-black dark:text-white">
           Project Analytics
         </h2>
 
         <select
           value={timeFilter}
           onChange={(e) => setTimeFilter(e.target.value)}
-          className="bg-[#111827] border border-[#1F2937] text-sm text-gray-300 rounded-lg px-3 py-1 focus:outline-none"
+          className="bg-white dark:bg-[#111827] border border-gray-300 dark:border-[#1F2937] text-sm text-gray-900 dark:text-gray-300 rounded-lg px-3 py-1 focus:outline-none"
         >
           <option value="week">This Week</option>
           <option value="month">This Month</option>
@@ -62,7 +62,7 @@ export default function AnalyticsSection({ analytics }) {
           {/* Center Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <p className="text-sm text-gray-400">
-              Total Tasks: {total}
+              Total Projects: {total}
             </p>
           </div>
 
@@ -78,12 +78,12 @@ export default function AnalyticsSection({ analytics }) {
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: item.color }}
                 ></span>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-800 dark:text-gray-300">
                   {item.name}
                 </p>
               </div>
 
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-300 ml-2 sm:ml-0">
                 {item.value}
               </p>
 
