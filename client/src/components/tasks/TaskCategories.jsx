@@ -12,9 +12,9 @@ export default function TaskCategories({ data = [] }) {
   };
 
   return (
-    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
-      <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">
+      <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-black dark:text-white">
         Task Categories
       </h2>
 
@@ -33,7 +33,7 @@ export default function TaskCategories({ data = [] }) {
 
             <div className="flex justify-between items-center mb-1 text-sm sm:text-base">
 
-              <span className="capitalize">{cat.name}</span>
+              <span className="capitalize text-black dark:text-white">{cat.name}</span>
 
               <span className="text-gray-400 text-xs sm:text-sm">
                 {cat.tasks} ({percent}%)

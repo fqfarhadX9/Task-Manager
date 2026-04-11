@@ -12,13 +12,13 @@ export default function TeamWorkload({ data = [] }) {
   ];
 
   return (
-    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl border">
 
-      <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">
+      <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-black dark:text-white">
         Team Workload
       </h2>
 
-      {data.map((member, index) => {
+      {data?.map((member, index) => {
 
         const progress = Math.round((member.tasks / maxTasks) * 100);
 
@@ -37,14 +37,14 @@ export default function TeamWorkload({ data = [] }) {
                   className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover"
                 />
 
-                <span className="truncate max-w-[120px] sm:max-w-none">
+                <span className="truncate max-w-[120px] sm:max-w-none text-black dark:text-white">
                   {member.name}
                 </span>
 
               </div>
 
               <span className="text-gray-400 text-xs sm:text-sm whitespace-nowrap">
-                {member.tasks} tasks
+                {member.completedTasks}/{member.tasks} tasks
               </span>
 
             </div>

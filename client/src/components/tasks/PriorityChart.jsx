@@ -11,10 +11,9 @@ export default function PriorityChart({ data = [] }) {
   const totalTasks = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <div className="bg-[#0F172A] p-4 sm:p-6 rounded-xl border border-gray-800">
+    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
-      {/* Header */}
-      <h2 className="text-base sm:text-lg font-semibold mb-4">
+      <h2 className="text-base sm:text-lg font-semibold mb-4 text-black dark:text-white">
         Priority Distribution
       </h2>
 
@@ -37,7 +36,7 @@ export default function PriorityChart({ data = [] }) {
         </ResponsiveContainer>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-xl sm:text-3xl font-bold">
+          <p className="text-xl sm:text-3xl font-bold text-black dark:text-white">
             {totalTasks}
           </p>
           <p className="text-gray-400 text-xs sm:text-sm">
@@ -57,11 +56,11 @@ export default function PriorityChart({ data = [] }) {
               style={{ background: COLORS[item.name] }}
             ></span>
 
-            <span className="capitalize text-gray-300">
+            <span className="capitalize text-gray-400">
               {item.name}
             </span>
 
-            <span className="text-gray-400">
+            <span style={{ color: COLORS[item.name] }}>
               ({item.value})
             </span>
 
