@@ -940,7 +940,12 @@ const getTaskDashboardData = async (req, res) => {
       {
         $group: {
           _id: "$assignedTo",
-          tasks: { $sum: 1 }
+          tasks: { $sum: 1 },
+          completedTasks: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "completed"] }, 1, 0]
+            }
+          }
         }
       },
 
@@ -961,7 +966,8 @@ const getTaskDashboardData = async (req, res) => {
           userId: "$user._id",
           name: "$user.name",
           profilePic: "$user.profileImageUrl",
-          tasks: 1
+          tasks: 1,
+          completedTasks: 1
         }
       }
     ]);

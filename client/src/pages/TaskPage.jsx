@@ -42,11 +42,15 @@ export default function TaskPage() {
   }, []);
 
   if (loading) {
-    return <div className="text-white p-6">Loading dashboard 🙃</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#020818]">
+        <p className="text-gray-400">Loading dashboard...</p>
+      </div>
+    )
   }
 
   return (
-    <div className="p-4 sm:p-6 text-white">
+    <div className="p-4 sm:p-6 min-h-screen bg-blue-50 dark:bg-[#020818]">
 
       <TaskHeader search={search} setSearch={setSearch} />
 
@@ -57,24 +61,24 @@ export default function TaskPage() {
       ) : (
         <>
            <div className="mt-6">
-            <TaskStats stats={dashboard.stats} />
+            <TaskStats stats={dashboard?.stats} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
 
-            <PriorityChart data={dashboard.priorityDistribution}/>
+            <PriorityChart data={dashboard?.priorityDistribution}/>
 
-            <TaskCategories data={dashboard.taskCategories}/>
+            <TaskCategories data={dashboard?.taskCategories}/>
 
-            <TeamWorkload data={dashboard.teamWorkload}/>
+            <TeamWorkload data={dashboard?.teamWorkload}/>
 
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
 
-            <UpcomingDeadlines data={dashboard.upcomingDeadlines}/>
+            <UpcomingDeadlines data={dashboard?.upcomingDeadlines}/>
 
-            <TaskCalendar data={dashboard.calendarTasks}/>
+            <TaskCalendar data={dashboard?.calendarTasks}/>
 
           </div>
 
