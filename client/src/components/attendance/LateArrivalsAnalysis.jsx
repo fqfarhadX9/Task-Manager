@@ -60,13 +60,13 @@ export default function LateArrivalsAnalysis() {
   const max = Math.max(...lateData.map(i => i.count), 1);
 
   return (
-    <div className="bg-gradient-to-br from-[#020817] to-[#020817]/70 border border-gray-800 rounded-2xl p-6 shadow-lg">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-lg">
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold text-black dark:text-white">
           Late Arrivals Analysis
         </h2>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-gray-400">
           Weekly Overview
         </span>
       </div>
@@ -77,7 +77,7 @@ export default function LateArrivalsAnalysis() {
         <>
           <div className="grid grid-cols-2 gap-6 mb-8">
 
-            <div className="bg-[#0F172A] p-4 rounded-xl">
+            <div className="border border-gray-200 dark:border-gray-800 p-4 rounded-xl">
               <p className="text-3xl font-bold text-orange-400">
                 {totalLate}
               </p>
@@ -86,7 +86,7 @@ export default function LateArrivalsAnalysis() {
               </p>
             </div>
 
-            <div className="bg-[#0F172A] p-4 rounded-xl">
+            <div className="border border-gray-200 dark:border-gray-800 p-4 rounded-xl">
               <p className="text-3xl font-bold text-blue-400">
                 {avg}
               </p>
@@ -97,7 +97,7 @@ export default function LateArrivalsAnalysis() {
 
           </div>
 
-          <p className="text-sm mb-4 text-gray-400">
+          <p className="font-medium mb-4 text-black dark:text-white">
             Late Arrivals by Day
           </p>
 

@@ -9,15 +9,17 @@ export default function LateArrivalCard({ data }) {
   });
 
   return (
-    <div className="flex items-center gap-4 border border-gray-800 p-4 rounded-lg">
+    <div className="flex items-center gap-4 border border-gray-200 dark:border-gray-800 p-4 rounded-lg">
 
-      <div className="bg-[#0F172A] p-3 rounded-lg">
+      <div className="bg-blue-100 dark:bg-[#1E293B] text-blue-400 p-3 rounded-full">
         <Clock size={18} />
       </div>
 
       <div>
         {data.userId?.name && (
-          <p className="font-medium">{data.userId.name}</p>
+          <p className="font-medium text-black dark:text-white">
+            {data.userId.name}
+          </p>
         )}
 
         <p className="text-sm text-gray-400">

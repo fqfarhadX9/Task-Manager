@@ -25,10 +25,10 @@ export default function LateArrivals() {
   }, []);
 
   return (
-    <div className="bg-[#020817] border border-gray-800 rounded-xl p-6">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold text-black dark:text-white">
           Late Arrivals
         </h2>
 
