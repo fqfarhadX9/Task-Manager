@@ -20,10 +20,10 @@ export default function AttendanceRow({ item }) {
   const time = formatTime(item.hours);
 
   return (
-    <tr className="border-b border-gray-800 hover:bg-[#020817]">
+    <tr className="hover:bg-blue-50 dark:hover:bg-gray-900 bord border-b border-gray-500 dark:border-gray-800 text-black dark:text-white text-sm sm:text-base">
 
       <td className="p-4">{item.userId?.name}</td>
-      <td className="p-4 text-gray-400">{item.date}</td>
+      <td className="p-4 ">{item.date}</td>
       <td className="p-4">{new Date(item.checkIn).toLocaleTimeString()}</td>
       <td className="p-4 ml-4">{item.checkOut ? new Date(item.checkOut).toLocaleTimeString(): "- - -"}</td>
 
