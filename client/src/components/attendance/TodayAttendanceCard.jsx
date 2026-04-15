@@ -46,12 +46,12 @@ export default function TodayAttendanceCard({refreshAttendance}) {
   if (loading) return null;
 
   return (
-    <div className="bg-[#0F172A] text-white">
+    <div>
 
       {!attendance && (
         <button
           onClick={handleCheckIn}
-          className="bg-green-500 hover:bg-green-600 px-5 py-2 rounded-lg"
+          className="bg-blue-400 hover:bg-blue-500 px-5 py-2 rounded-lg text-white"
         >
           Check In
         </button>
@@ -60,7 +60,7 @@ export default function TodayAttendanceCard({refreshAttendance}) {
       {attendance && !attendance.checkOut && (
         <button
           onClick={handleCheckOut}
-          className="bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-lg"
+          className="bg-blue-400 hover:bg-blue-500 px-5 py-2 rounded-lg text-white"
         >
           Check Out
         </button>
