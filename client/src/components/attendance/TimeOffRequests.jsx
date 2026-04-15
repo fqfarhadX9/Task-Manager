@@ -73,15 +73,17 @@ export default function TimeOffRequests() {
 
 
   return (
-    <div className="bg-[#020817] border border-gray-800 rounded-xl p-6">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
 
       <div className="flex justify-between items-center mb-6">
 
-        <h2 className="text-lg font-semibold">Time Off Requests</h2>
+        <h2 className="text-lg font-semibold text-black dark:text-white">
+          Time Off Requests
+        </h2>
 
         <button
           onClick={()=>setShowForm(true)}
-          className="bg-blue-500 px-4 py-2 rounded-md text-sm"
+          className="bg-blue-400 hover:bg-blue-500 px-4 py-2 rounded-md text-sm"
         >
           Request Time Off
         </button>
@@ -103,9 +105,9 @@ export default function TimeOffRequests() {
 
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
 
-          <div className="bg-[#0F172A] p-6 rounded-lg w-96">
+          <div className="bg-white dark:bg-gray-950 p-6 rounded-lg w-96">
 
-            <h3 className="text-lg font-semibold mb-4">
+            <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
               Request Time Off
             </h3>
 
@@ -115,7 +117,7 @@ export default function TimeOffRequests() {
                 type="date"
                 value={startDate}
                 onChange={(e)=>setStartDate(e.target.value)}
-                className="w-full bg-[#020817] border border-gray-700 p-2 rounded"
+                className="w-full border border-gray-200 dark:border-gray-800 p-2 rounded"
                 required
               />
 
@@ -123,7 +125,7 @@ export default function TimeOffRequests() {
                 type="date"
                 value={endDate}
                 onChange={(e)=>setEndDate(e.target.value)}
-                className="w-full bg-[#020817] border border-gray-700 p-2 rounded"
+                className="w-full border border-gray-200 dark:border-gray-800 p-2 rounded"
                 required
               />
 
@@ -131,7 +133,7 @@ export default function TimeOffRequests() {
                 placeholder="Reason"
                 value={reason}
                 onChange={(e)=>setReason(e.target.value)}
-                className="w-full bg-[#020817] border border-gray-700 p-2 rounded"
+                className="w-full border border-gray-200 dark:border-gray-800 p-2 rounded"
                 required
               />
 

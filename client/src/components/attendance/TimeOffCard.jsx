@@ -28,19 +28,19 @@ export default function TimeOffCard({ data, updateStatus, error }) {
   };
 
   return (
-    <div className="border border-gray-800 rounded-lg p-4 hover:bg-[#020817]">
+    <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
 
       <div className="flex items-center justify-between">
 
         <div className="flex items-center gap-4">
 
-          <div className="bg-[#0F172A] p-3 rounded-lg">
+          <div className="p-3 rounded-full bg-blue-100 text-blue-500">
             <Calendar size={18} />
           </div>
 
           <div>
-            <p className="font-medium">{data.userId.name}</p>
-            <p className="text-sm text-gray-400">
+            <p className="font-medium text-black dark:text-white">{data.userId.name}</p>
+            <p className="text-sm text-gray-500">
               {data.reason} • {formatLeaveDate(data.startDate, data.endDate)}
             </p>
           </div>
