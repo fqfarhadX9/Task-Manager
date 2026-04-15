@@ -1,5 +1,4 @@
 import AttendanceHeader from "../components/attendance/AttendanceHeader";
-import AttendanceFilter from "../components/attendance/AttendanceFilter";
 import AttendanceTable from "../components/attendance/AttendanceTable";
 import TimeOffRequests from "../components/attendance/TimeOffRequests";
 import LateArrivalsAnalysis from "../components/attendance/LateArrivalsAnalysis";
@@ -49,21 +48,17 @@ export default function Attendance() {
   }, [selectedDate])
 
   return (
-    <div className="p-6 bg-[#0F172A] min-h-screen text-white">
-      <AttendanceHeader 
-        attendanceData={attendanceData} 
-        refreshAttendance={fetchAttendance}
-      />
+    <div className="p-6 min-h-screen bg-blue-50 dark:bg-[#020818]">
+      <AttendanceHeader />
 
       <div className="mt-6">
-        <AttendanceFilter 
+        <AttendanceTable 
+          data={filteredData} 
+          attendanceData={attendanceData} 
+          refreshAttendance={fetchAttendance} 
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
         />
-      </div>
-
-      <div className="mt-6">
-        <AttendanceTable data={filteredData} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
