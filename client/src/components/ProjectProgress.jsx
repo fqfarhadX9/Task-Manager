@@ -1,8 +1,8 @@
 export default function ProjectProgress({ tasks }) {
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-[#020617] border border-gray-200 dark:border-[#1F2937] rounded-2xl p-6 h-full">
 
-      <h2 className="text-lg font-semibold text-white mb-6">
+      <h2 className="text-lg font-semibold text-black dark:text-white mb-6">
         Project Progress
       </h2>
 
@@ -10,9 +10,9 @@ export default function ProjectProgress({ tasks }) {
         {tasks.map((project, index) => (
           <div key={index}>
             
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>{project.title}</span>
-              <span>{project.progress}%</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-900 text-sm dark:text-gray-400">{project.title}</span>
+              <span className="text-black text-base dark:text-gray-400">{project.progress}%</span>
             </div>
 
             <div className="w-full h-3 bg-[#1F2937] rounded-full">
