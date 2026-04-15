@@ -28,7 +28,6 @@ export default function WFHTracker() {
 
   const fetchData = async () => {
     const res = await axios.get("/attendance/week/all");
-    console.log(res.data);
     setUsers(res.data);
   };
 
@@ -48,15 +47,15 @@ export default function WFHTracker() {
   }, [])
 
   return (
-    <div className="bg-[#020817] border border-gray-800 rounded-xl p-6">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
       {role === "admin" && (
        <>
         <div className="flex justify-between mb-6">
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-black dark:text-white">
             Work From Home Tracker
           </h2>
 
-          <span className="text-gray-400 text-xs bg-[#1E293B] px-3 py-1 rounded-full">
+          <span className="text-gray-400 text-xs bg-blue-200 dark:bg-[#1E293B] px-3 py-1 rounded-full">
             {users.length} Members 👥
           </span>
         </div>
@@ -64,11 +63,11 @@ export default function WFHTracker() {
         <div className="mb-6">
 
           <div className="flex justify-between text-sm mb-2">
-            <span>Office: {wfoUser}</span>
+            <span className="text-indigo-400">Office: {wfoUser}</span>
             <span className="text-green-400">Remote: {wfhUser}</span>
           </div>
 
-          <div className="w-full bg-[#0F172A] h-2 rounded">
+          <div className="w-full bg-gray-200 dark:bg-[#0F172A] h-2 rounded">
             <div
               className="bg-blue-500 h-2 rounded"
               style={{ width: `${Percent}%` }} 
@@ -85,21 +84,21 @@ export default function WFHTracker() {
 
         {isOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-[#1E293B] p-6 rounded-lg w-80 relative">
+            <div className="bg-white dark:bg-gray-950 p-6 rounded-lg w-80 relative">
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
+                className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
               >
                 ✕
               </button>
 
-              <h3 className="mb-4">Update Mode</h3>
+              <h3 className="mb-4 text-black dark:text-white">Update Mode</h3>
 
               <select
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
-                className="w-full p-2 bg-[#020817] border border-gray-600"
+                className="w-full p-2 border border-gray-200 dark:border-gray-800 text-gray-400"
               >
                 <option value="office">Office</option>
                 <option value="remote">Remote</option>
@@ -115,7 +114,7 @@ export default function WFHTracker() {
                   setIsOpen(false);
                   fetchData();
                 }}
-                className="mt-4 w-full bg-blue-500 py-2 rounded"
+                className="mt-4 w-full bg-blue-400 hover:bg-blue-500 py-2 rounded"
               >
                 Save
               </button>
@@ -129,7 +128,7 @@ export default function WFHTracker() {
       {role === "user" && currentUserData && (
         <>
           <div className="flex justify-between mb-6 items-center">
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-lg font-semibold text-black dark:text-white">
               My Work Mode
             </h2>
           </div>
