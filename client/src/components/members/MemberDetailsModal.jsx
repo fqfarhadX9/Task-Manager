@@ -1,45 +1,72 @@
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Gift } from "lucide-react";
+import axios from "../../api/axios.js";
+import { useNavigate } from "react-router-dom";
 
-const MemberDetailsModal = ({ member, onClose }) => {
+const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
   const [activeTab, setActiveTab] = useState("info");
+  const [projects, setProjects] = useState([])
+  const [loadingProjects, setLoadingProjects] = useState(false)
+
+  const navigate = useNavigate();
+
+  const fetchProjects = async () => {
+    try {
+      setLoadingProjects(true);
+      const {data} = await axios.get(`/task/tasks/user/${member._id}`);
+      setProjects(data.projects);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === "projects") {
+      fetchProjects();
+    }
+  }, [activeTab]);
+
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
 
-      <div className="bg-[#0F172A] w-[650px] rounded-xl border border-gray-800 p-6 relative">
+      <div className="bg-white dark:bg-gray-950 w-[650px] rounded-xl border border-gray-200 dark:border-gray-800 p-6 relative">
 
         <button
-          onClick={onClose}
-          className="absolute right-4 top-4 text-gray-400 hover:text-white"
+          onClick={() => {
+            onClose();
+        }}
+          className="absolute right-4 top-4 text-gray-400 hover:text-red-600 transition"
         >
-          <X size={18} />
+          <X size={20} />
         </button>
 
         <div className="flex items-center gap-4 mb-6">
 
           <img
-            src={member?.profileImageUrl || "https://i.pravatar.cc/150"}
+            src={member?.profileImageUrl}
             className="w-16 h-16 rounded-lg object-cover"
           />
 
           <div>
-            <h2 className="text-xl font-semibold text-white">
-              {member?.name || "Alex Johnson"}
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+              {member?.name}
             </h2>
 
             <div className="flex gap-2 mt-1">
 
               <span className="text-sm text-gray-400">
-                {member?.position || "Developer"}
+                {member?.position}
               </span>
 
-              <span className="px-2 py-[2px] text-xs bg-green-500/20 text-green-400 rounded">
-                Active
+              <span className={`px-2 py-[2px] text-xs rounded ${member?.status === "active" ?  "border border-gray-300 dark:border-gray-700 text-black dark:text-white" : "border dark:border-gray-700 bg-blue-600 dark:bg-[#020617] text-white"}`}>
+                {member?.status === "active" ? "Active" : "Away"}
               </span>
 
-              <span className="px-2 py-[2px] text-xs bg-blue-500/20 text-blue-400 rounded">
-                Admin
+              <span className="px-2 py-[2px] text-xs rounded bg-blue-400 text-white" >
+                {member?.role === "admin" ? "Admin" : "Member"}
               </span>
 
             </div>
@@ -47,14 +74,14 @@ const MemberDetailsModal = ({ member, onClose }) => {
 
         </div>
 
-        <div className="flex bg-[#020617] rounded-lg p-1 mb-6">
+        <div className="flex bg-blue-50 dark:bg-[#020617] rounded-lg p-1 mb-6">
 
           <button
             onClick={() => setActiveTab("info")}
             className={`flex-1 py-2 rounded-md text-sm ${
               activeTab === "info"
-                ? "bg-[#111827] text-white"
-                : "text-gray-400"
+                ? "bg-blue-400 dark:bg-gray-950 text-white border border-gray-200 dark:border-gray-800"
+                : "text-gray-400 hover:bg-blue-400 hover:text-white"
             }`}
           >
             Information
@@ -64,8 +91,8 @@ const MemberDetailsModal = ({ member, onClose }) => {
             onClick={() => setActiveTab("projects")}
             className={`flex-1 py-2 rounded-md text-sm ${
               activeTab === "projects"
-                ? "bg-[#111827] text-white"
-                : "text-gray-400"
+                ? "bg-blue-400 dark:bg-gray-950 text-white border border-gray-200 dark:border-gray-800"
+                : "text-gray-400 hover:bg-blue-400 hover:text-white"
             }`}
           >
             Projects
@@ -75,8 +102,8 @@ const MemberDetailsModal = ({ member, onClose }) => {
             onClick={() => setActiveTab("skills")}
             className={`flex-1 py-2 rounded-md text-sm ${
               activeTab === "skills"
-                ? "bg-[#111827] text-white"
-                : "text-gray-400"
+                ? "bg-blue-400 dark:bg-gray-950 text-white border border-gray-200 dark:border-gray-800"
+                : "text-gray-400 hover:bg-blue-400 hover:text-white"
             }`}
           >
             Skills
@@ -87,33 +114,32 @@ const MemberDetailsModal = ({ member, onClose }) => {
         {/* INFORMATION TAB */}
 
         {activeTab === "info" && (
-          <div className="space-y-5 text-sm text-gray-300">
+          <div className="space-y-5 text-sm text-black dark:text-white">
 
             <div>
-              <p className="text-gray-400">Email</p>
-              <p>alex@example.com</p>
+              <p>Email</p>
+              <p className="text-gray-400">{member?.email}</p>
             </div>
 
             <div>
-              <p className="text-gray-400">Phone</p>
-              <p>+1 (555) 123-4567</p>
+              <p>Phone</p>
+              <p className="text-gray-400">{member?.phone}</p>
             </div>
 
             <div>
-              <p className="text-gray-400">Location</p>
-              <p>San Francisco, CA</p>
+              <p>Location</p>
+              <p className="text-gray-400">{member?.location}</p>
             </div>
 
             <div>
-              <p className="text-gray-400">Joined</p>
-              <p>Jan 15, 2024</p>
+              <p>Joined</p>
+              <p className="text-gray-400">{member?.joinedDate || "Jan 15, 2026"}</p>
             </div>
 
             <div>
-              <p className="text-gray-400">Bio</p>
-              <p>
-                Full-stack developer with 5 years of experience building
-                scalable web applications.
+              <p>Bio</p>
+              <p className="text-gray-400">
+               {member?.bio || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
               </p>
             </div>
 
@@ -123,54 +149,120 @@ const MemberDetailsModal = ({ member, onClose }) => {
         {/* PROJECTS TAB */}
 
         {activeTab === "projects" && (
-          <div className="text-gray-400 text-sm">
-            Project A <br/>
-            Project B <br/>
-            Project C
+          <div className="space-y-3">
+
+            {loadingProjects ? (
+              <p className="text-gray-400 text-sm">Loading projects...</p>
+            ) : projects?.length === 0 ? (
+              <p className="text-gray-400 text-sm">No projects assigned</p>
+            ) : (
+              projects?.map((project, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border border-gray-200 dark:border-gray-800 px-4 py-3 rounded-lg"
+                >
+
+                  {/* LEFT */}
+                  <div className="flex items-center gap-3">
+
+                    {/* ICON */}
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md">
+                      <Gift size={16} className="text-blue-400" />
+                    </div>
+
+                    {/* NAME + STATUS */}
+                    <div>
+                      <p className="text-sm text-black dark:text-white font-medium">
+                        {project.title}
+                      </p>
+
+                      <p className="text-xs text-gray-400">
+                        {project.status === "completed"
+                          ? "Completed"
+                          : project.status === "in_progress"
+                          ? "Active Project"
+                          : "Pending"}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  {/* RIGHT */}
+                  <button
+                    onClick={() => navigate(`/task/${project._id}`)} 
+                    className="text-sm px-3 py-1 text-black dark:text-white border border-gray-200 dark:border-gray-800 rounded-md">
+                    View
+                  </button>
+
+                </div>
+              ))
+            )}
+
           </div>
         )}
 
         {/* SKILLS TAB */}
 
         {activeTab === "skills" && (
-          <div className="flex gap-2 flex-wrap">
+          <div>
+            <div className="flex gap-2 flex-wrap">
 
-            <span className="px-3 py-1 bg-[#111827] rounded text-sm">
-              React
-            </span>
+              {(member.skills).map((skill, index) => (
+                  <span
+                    key={index}
+                    className="bg-blue-700/90 dark:bg-gray-900/50 text-white text-xs px-3 py-1 rounded-lg"
+                  >
+                    {skill.name}
+                  </span>
+                )
+              )}
+            </div>
 
-            <span className="px-3 py-1 bg-[#111827] rounded text-sm">
-              Node.js
-            </span>
+            <div className="mt-4">
+              <h3 className="text-sm text-black dark:text-white mb-3">
+                Expertise Areas
+              </h3>
 
-            <span className="px-3 py-1 bg-[#111827] rounded text-sm">
-              AWS
-            </span>
+              {member?.skills?.map((skill, i) => (
+                <div key={i} className="mb-4">
 
-            <span className="px-3 py-1 bg-[#111827] rounded text-sm">
-              MongoDB
-            </span>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-800 dark:text-white">{skill.name}</span>
+                    <span className="text-gray-800 dark:text-white">{skill.level}%</span>
+                  </div>
 
+                  <div className="w-full h-2 bg-gray-200 dark:bg-[#1F2937] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500 rounded-full transition-all"
+                      style={{ width: `${skill.level}%` }}
+                    />
+                  </div>
+
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Footer */}
         <div className="flex justify-between mt-8">
-
           <button
-            onClick={onClose}
-            className="px-4 py-2 bg-[#020617] border border-gray-700 rounded-lg text-sm"
+            onClick={() => {
+              setEditMember(member);
+              onClose();
+            }}
+            className="px-4 py-2 border border-gray-200 dark:border-gray-800 hover:bg-blue-100 dark:hover:bg-gray-900/50 text-black dark:text-white rounded-lg text-sm"
           >
-            Close
+            Edit
           </button>
 
           <div className="flex gap-3">
 
-            <button className="px-4 py-2 border border-gray-700 rounded-lg text-sm">
+            <button className="px-4 py-2 border hover:bg-blue-100 dark:hover:bg-gray-900/50 border-gray-200 dark:border-gray-800 text-black dark:text-white rounded-lg text-sm">
               View Profile
             </button>
 
-            <button className="px-4 py-2 bg-blue-600 rounded-lg text-sm">
+            <button className="px-4 py-2 bg-blue-400 hover:bg-blue-500 rounded-lg text-sm">
               Message
             </button>
 
