@@ -10,9 +10,9 @@ export default function TaskHeader({search, setSearch}) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search tasks..."
-        className="w-full sm:w-64 md:w-80 bg-white dark:bg-[#020818] border border-gray-200 dark:border-gray-800 hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 text-black dark:text-white px-3 sm:px-4 py-2 rounded-lg outline-none text-sm md:text-base"
+        className="w-full sm:w-64 md:w-80 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 hover:border-blue-400 focus:border-blue-300 focus:ring-2 focus:ring-blue-300 text-black dark:text-white px-3 sm:px-4 py-2 rounded-lg outline-none text-sm md:text-base"
       />
 
     </div>
   );
-} focus:ring-blue-300
+} 
