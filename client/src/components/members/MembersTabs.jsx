@@ -18,8 +18,8 @@ const MembersTabs = ({ positionFilter, setPositionFilter }) => {
           className={`px-6 py-2 rounded-lg text-sm font-medium transition
             ${
               positionFilter === tab.value
-                ? "bg-[#1F2937] text-white border border-gray-700"
-                : "text-gray-400 hover:text-white"
+                ? "bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800"
+                : "text-gray-400 hover:bg-blue-400 hover:text-white"
             }
           `}
         >
