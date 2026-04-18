@@ -1,8 +1,10 @@
 import axios from "../../api/axios.js";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
+  const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -15,78 +17,88 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
         phone: "",
         location: ""
     });
-    const handleChange = (e) => {
-      const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-        setFormData({
-            ...formData,
-            [e.target.name]: value
-        });
-    };
 
-    const handleSubmit = async () => {
+  const handleChange = (e) => {
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    const name = e.target.name;
+    
+    setFormData((formData) => {
+      const updated = {...formData, [e.target.name]: value};
 
-        try {
+      if(name === "position") {
+        updated.skills = [];
+      }
 
-            await axios.post("/user",
-            formData,
-            );
-            fetchMembers();
-            alert("Member added");
-            setShowAddMember(false);
-            setFormData({
-                name:"",
-                email:"",
-                role:"user",
-                position:"",
-                status:"active",
-                shedule:"office",
-                bio:"",
-                skills: [],
-                phone: "",
-                location: ""
-            });
+      return updated;
+    });
+  };
 
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    const skillOptions = {
-      Developer: ["React", "Node", "MongoDB", "JavaScript", "Typescript", "Python", "Django", "PostgreSQL", "GraphQl", "AWS"],
-      Designer: ["Figma", "UI/UX", "Photoshop", "Illustration", "Product Design", "Animation" ],
-      Marketer: ["SEO", "Ads", "Content Marketing", "Social Media", "Market Research", "Content Strategy", "Analytics", "Email Marketing"],
-      Tester: ["Manual Testing", "Automation", "Test Case Design", "Bug Identification", "CI/CD", "Postman", "JIRA"]
-    };
+  const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
 
-    const handleSkillChange = (skill) => {
-      setFormData(prev => {
-        const exists = prev.skills.find(s => s.name === skill);
-        if(exists) {
-          return {
-            ...prev,
-            skills: prev.skills.filter(s => s.name !== skill)
-          }
-        } else {
-          return {
-            ...prev,
-            skills: [...prev.skills,
-              {name: skill, level: 50}
-            ]
-          }
-        }
-      })
+      const {data} = await axios.post("/user",
+      formData,
+      );
+      fetchMembers();
+      toast.success(data?.message || "User added successfully 🎉");
+      setShowAddMember(false);
+      setFormData({
+        name:"",
+        email:"",
+        role:"user",
+        position:"",
+        status:"active",
+        shedule:"office",
+        bio:"",
+        skills: [],
+        phone: "",
+        location: ""
+      });
+
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong";
+
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() => {
-      setFormData(prev => ({
-        ...prev,
-        skills: []
-      }))
-    }, [formData.position]);
+  const skillOptions = {
+    Developer: ["React", "Node", "MongoDB", "JavaScript", "Typescript", "Python", "Django", "PostgreSQL", "GraphQl", "AWS"],
+    Designer: ["Figma", "UI/UX", "Photoshop", "Illustration", "Product Design", "Animation" ],
+    Marketer: ["SEO", "Ads", "Content Marketing", "Social Media", "Market Research", "Content Strategy", "Analytics", "Email Marketing"],
+    Tester: ["Manual Testing", "Automation", "Test Case Design", "Bug Identification", "CI/CD", "Postman", "JIRA"]
+  };
+
+  const handleSkillChange = (skill) => {
+    setFormData(prev => {
+      const exists = prev.skills.find(s => s.name === skill);
+      if(exists) {
+        return {
+          ...prev,
+          skills: prev.skills.filter(s => s.name !== skill)
+        }
+      } else {
+        return {
+          ...prev,
+          skills: [...prev.skills,
+            {name: skill, level: 50}
+          ]
+        }
+      }
+    })
+  }
+
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 overflow-y-auto py-10">
 
-      <div className="bg-white dark:bg-gray-950 w-[520px] overflow-y-auto max-h-[90vh] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-950 w-[520px] overflow-y-auto max-h-[90vh] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
 
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-black dark:text-white">
@@ -112,7 +124,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             <input
               type="text"
               placeholder="John Doe"
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -124,7 +136,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             <input
               type="email"
               placeholder="john@email.com"
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm"
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -136,7 +148,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             <input
               type="number"
               placeholder="Enter phone number"
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -148,7 +160,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             <input
               type="text"
               placeholder="Enter location"
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm"
               name="location"
               value={formData.location}
               onChange={handleChange}
@@ -161,7 +173,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="user">Member</option>
               <option value="admin">Admin</option>
             </select>
@@ -173,7 +185,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="active">Active</option>
               <option value="away">Away</option>
             </select>
@@ -185,20 +197,20 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
               name="shedule"
               value={formData.shedule}
               onChange={handleChange}
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="office">Office</option>
               <option value="remote">Remote</option>
             </select>
           </div>
 
           <div>
-            <label className="text-sm text-gray-400">Role</label>
+            <label className="text-sm text-gray-400">Position</label>
             <select
                 name="position" 
                 value={formData.position}
                 onChange={handleChange}
-                className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm">
-                    <option>Select role</option>
+                className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm">
+                    <option value="">Select Position</option>
                     <option>Developer</option>
                     <option>Designer</option>
                     <option>Marketer</option>
@@ -265,7 +277,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             <textarea
               name="bio"
               placeholder="Tell us about the member..."
-              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400  rounded-lg px-3 py-2 text-sm h-20"
+              className="w-full mt-1 bg-white dark:bg-gray-950 text-black dark:text-white border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:-border-blue-400 rounded-lg px-3 py-2 text-sm h-20"
               value={formData.bio}
               onChange={handleChange}
             />
@@ -282,13 +294,17 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
             Cancel
           </button>
 
-          <button className="px-4 py-2 text-sm bg-blue-400 hover:bg-blue-500 rounded-lg text-white" onClick={handleSubmit}>
-            Add Member
+          <button
+            type="submit"
+            disabled={loading} 
+            className="px-4 py-2 text-sm bg-blue-400 hover:bg-blue-500 rounded-lg text-white"
+          > 
+            {loading ? "Adding..." : "Add member"}
           </button>
 
         </div>
 
-      </div>
+      </form>
 
     </div>
   );

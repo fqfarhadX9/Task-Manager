@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios.js";
 import { X } from "lucide-react";
+import toast from "react-hot-toast";
 
 const EditMemberModal = ({ member, onClose, refresh }) => {
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: member.name,
     email: member.email,
@@ -18,22 +19,38 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    const name = e.target.name;
+    
+    setFormData((formData) => {
+      const updated = {...formData, [e.target.name]: value};
+
+      if(name === "position") {
+        updated.skills = [];
+      }
+
+      return updated;
     });
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true)
     try {
       const {data} = await axios.put(`/user/${member._id}`, formData);
       refresh();
+      toast.success(data?.message || "User updated successfully 🎉");
       onClose(data.updatedUser);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong";
+
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
-
   const skillOptions = {
     Developer: ["React", "Node", "MongoDB", "JavaScript", "Typescript", "Python", "Django", "PostgreSQL", "GraphQl", "AWS"],
     Designer: ["Figma", "UI/UX", "Photoshop", "Illustration", "Product Design", "Animation" ],
@@ -59,17 +76,10 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
       })
     }
 
-    useEffect(() => {
-      setFormData(prev => ({
-        ...prev,
-        skills: []
-      }))
-    }, [formData.position])
-
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-start overflow-y-auto py-10">
 
-      <div className="bg-white dark:bg-[#020617] p-6 rounded-xl w-[500px] overflow-y-auto max-h-[90vh]">
+      <form onSubmit={handleUpdate} className="bg-white dark:bg-[#020617] p-6 rounded-xl w-[500px] overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-800">
 
         <div className="flex justify-between mb-4 text-black dark:text-white ">
           <h2>Edit Member</h2>
@@ -83,7 +93,7 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
@@ -93,16 +103,16 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
           <div className="col-span-1">
             <label className="text-sm text-gray-500">Phone Number</label>
             <input
-              type="number"
+              type="text"
               placeholder="Enter phone number"
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -114,7 +124,7 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
             <input
               type="text"
               placeholder="Enter location"
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm"
               name="location"
               value={formData.location}
               onChange={handleChange}
@@ -127,7 +137,7 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="user">Member</option>
               <option value="admin">Admin</option>
             </select>
@@ -139,7 +149,7 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="active">Active</option>
               <option value="away">Away</option>
             </select>
@@ -151,20 +161,20 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
               name="shedule"
               value={formData.shedule}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm">
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm">
               <option value="office">Office</option>
               <option value="remote">Remote</option>
             </select>
           </div>
 
           <div>
-            <label className="text-sm text-gray-500">Role</label>
+            <label className="text-sm text-gray-500">Position</label>
             <select
               name="position" 
               value={formData.position}
               onChange={handleChange}
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm">
-                <option>Select role</option>
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm">
+                <option value="">Select Position</option>
                 <option>Developer</option>
                 <option>Designer</option>
                 <option>Marketer</option>
@@ -231,7 +241,7 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
             <textarea
               name="bio"
               placeholder="Tell us about the member..."
-              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm h-20"
+              className="w-full mt-1 dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 text-sm h-20"
               value={formData.bio}
               onChange={handleChange}
             />
@@ -241,13 +251,14 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
         </div>
 
         <button
-          onClick={handleUpdate}
+          disabled={loading}
+          type="submit"
           className="bg-blue-500 hover:bg-blue-600 px-4 py-3 w-full mt-2 font-semibold rounded"
         >
-          Update
+         {loading ? "Updating..." : "Update"}
         </button>
 
-      </div>
+      </form>
     </div>
   );
 };
