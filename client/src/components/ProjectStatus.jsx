@@ -17,9 +17,9 @@ export default function ProjectStatus({ analytics}) {
 
 
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 h-full">
 
-      <h2 className="text-lg font-semibold text-white mb-6">
+      <h2 className="text-lg font-semibold text-black dark:text-white mb-6">
         Project Status
       </h2>
 
@@ -27,12 +27,12 @@ export default function ProjectStatus({ analytics}) {
         {data.map((item, index) => (
           <div key={index}>
             
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>{item.name}</span>
-              <span>{item.value}%</span>
+            <div className="flex justify-between mb-2">
+              <span className=" text-gray-800 text-sm dark:text-gray-400">{item.name}</span>
+              <span className=" text-black text-base dark:text-gray-400">{item.value}%</span>
             </div>
 
-            <div className="w-full h-3 bg-[#1F2937] rounded-full">
+            <div className="w-full h-3 bg-gray-200 dark:bg-[#1F2937] rounded-full">
               <div
                 className="h-3 rounded-full transition-all duration-500"
                 style={{
