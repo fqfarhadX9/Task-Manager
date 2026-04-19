@@ -21,14 +21,14 @@ const MembersHeader = ({
   fetchMembers
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
 
       {/* TITLE */}
       <h1 className="text-3xl font-semibold text-black dark:text-white">
         Team Members
       </h1>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
 
         {/* SEARCH */}
         <div className="relative">
@@ -45,7 +45,7 @@ const MembersHeader = ({
             className="bg-white dark:bg-gray-950
                        border border-gray-200 dark:border-gray-800
                        text-sm text-gray-900 dark:text-white 
-                       rounded-lg pl-10 pr-4 py-2 w-64 
+                       rounded-lg pl-10 pr-4 py-2 w-full sm:w-64 
                        focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -68,7 +68,7 @@ const MembersHeader = ({
           </button>
 
           {showFilter && (
-            <div className="absolute right-0 top-12 w-56 
+            <div className="absolute left-0 sm:left-auto sm:right-0 top-12 w-auto sm:w-56 
                             bg-white dark:bg-[#111827] 
                             border border-gray-200 dark:border-gray-700 
                             rounded-lg shadow-xl p-3 z-50">
@@ -141,9 +141,8 @@ const MembersHeader = ({
 
         {/* ADD BUTTON */}
         <button 
-          className="flex items-center gap-2 
-                     bg-blue-400 hover:bg-blue-500 
-                     text-white px-4 py-2 
+          className="flex-1 sm:flex-none flex items-center justify-center gap-2
+                     bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 
                      rounded-lg text-sm font-medium transition"
           onClick={() => setShowAddMember(true)}
         >

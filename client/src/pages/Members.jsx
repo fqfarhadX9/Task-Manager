@@ -43,7 +43,7 @@ const Members = () => {
       setCurrentPage(1);
     }, [search, roleFilter, statusFilter, positionFilter]);
   return (
-    <div className="min-h-screen bg-blue-50 dark:bg-[#020818] p-6">
+    <div className="min-h-screen bg-blue-50 dark:bg-[#080E1A] p-6">
 
       {/* PAGE TITLE + SEARCH&FILTER + ADD BTN */}
       <MembersHeader 
@@ -88,6 +88,7 @@ const Members = () => {
           member={selectedMember}
           setEditMember={setEditMember}
           onClose={() => setSelectedMember(null)}
+          refresh={fetchMembers}
         />
       )}
 
@@ -99,6 +100,8 @@ const Members = () => {
 
             if(updatedmember) {
               setSelectedMember(updatedmember);
+            } else {
+              setSelectedMember(null); 
             }
           }}
           refresh={fetchMembers}
