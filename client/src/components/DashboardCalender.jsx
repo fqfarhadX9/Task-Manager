@@ -18,7 +18,7 @@ export default function DashboardCalendar() {
 
 
   return (
-    <div className="bg-white dark:bg-[#020617] border border-gray-200 dark:border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 h-full">
       
        <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-black dark:text-white">

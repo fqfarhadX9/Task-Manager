@@ -19,7 +19,7 @@ export default function AnalyticsSection({ analytics }) {
   const total = analytics.total || 0;
 
   return (
-    <div className="bg-white dark:bg-[#020617] border border-gray-200 dark:border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 h-full">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -30,7 +30,7 @@ export default function AnalyticsSection({ analytics }) {
         <select
           value={timeFilter}
           onChange={(e) => setTimeFilter(e.target.value)}
-          className="bg-white dark:bg-[#111827] border border-gray-300 dark:border-[#1F2937] text-sm text-gray-900 dark:text-gray-300 rounded-lg px-3 py-1 focus:outline-none"
+          className="border border-gray-200 dark:border-gray-800 text-sm text-gray-400 rounded-lg px-3 py-1 focus:outline-none"
         >
           <option value="week">This Week</option>
           <option value="month">This Month</option>
