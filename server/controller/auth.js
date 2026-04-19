@@ -1,6 +1,8 @@
 const User = require("../model/user.js")
 const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+
 
 const signup = async (req, res) => {
   try {
@@ -12,6 +14,13 @@ const signup = async (req, res) => {
 
     const isAlreadyExist = await User.findOne({ email });
     if (isAlreadyExist) {
+
+      if (isAlreadyExist.providers?.includes("google")) {
+        return res.status(400).json({
+          message: "Account already exists with Google. Please login with Google or set a password."
+        });
+      }
+
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -31,6 +40,7 @@ const signup = async (req, res) => {
       password: hashedPassword,
       profileImageUrl,
       role,
+      providers: ["local"],
     });
 
     await newUser.save();
@@ -62,6 +72,12 @@ const signin = async (req, res) => {
       });
     }
 
+    if (!user.providers?.includes("local")) {
+      return res.status(400).json({
+        message: "Please login using Google",
+      });
+    }
+
     const isPasswordMatch = await bcryptjs.compare(
       password,
       user.password
@@ -84,7 +100,6 @@ const signin = async (req, res) => {
       }
     );
 
-    // remove password before sending user data
     const { password: _, ...userData } = user._doc;
 
     res.status(200).json({
@@ -100,7 +115,84 @@ const signin = async (req, res) => {
   }
 };
 
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const googleSignin = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const { name, email, picture, email_verified } = payload;
+
+    if (!email_verified) {
+      return res.status(400).json({
+        message: "Google email not verified",
+      });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await  User.create({
+        name,
+        email,
+        profileImageUrl: picture,
+        providers: ["google"],
+      });
+    } else {
+      if (!user.providers) {
+        user.providers = ["local"];
+      }
+
+      if (!user.providers?.includes("google")) {
+        user.providers.push("google");
+        await user.save();
+      }
+      
+      if (!user.profileImageUrl) {
+        user.profileImageUrl = picture;
+      }
+    }
+
+    const jwtToken = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    const { password, ...userData } = user._doc;
+
+    res.status(200).json({
+      message: "Signin successful",
+      token: jwtToken,
+      user
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Google Signin failed",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
     signup,
     signin,
+    googleSignin, 
 }

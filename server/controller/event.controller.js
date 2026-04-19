@@ -16,7 +16,7 @@ const createEvent = async (req, res) => {
     }
 
     if(req.role != "admin") {
-       return res.status(403).json({ message: "Not allowed" });
+       return res.status(403).json({ message: "Not allowed samjha bhadwe" });
     }
 
     const event = await Event.create({

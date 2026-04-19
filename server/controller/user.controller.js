@@ -74,9 +74,8 @@ const createUser = async (req, res) => {
     const {
       name,
       email,
-      role,
       position,
-      isActive,
+      status,
       shedule,
       skills, 
       bio,
@@ -84,14 +83,22 @@ const createUser = async (req, res) => {
       location
     } = req.body;
 
-    if(!name || !email || !role || !position || !shedule || !skills) {
+    if(!name || !email || !status || !position || !shedule || !Array.isArray(skills) || skills.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required except bio"
+        message: "Required fields missing or invalid"
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const allowedStatus = ["active", "away"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid status"
+        });
+    }
+    
+    const normalizedEmail = email.toLowerCase();
+    const userExists = await User.findOne({ email: normalizedEmail });
 
     if (userExists) {
       return res.status(400).json({
@@ -99,20 +106,37 @@ const createUser = async (req, res) => {
       });
     }
 
-    const hashedpassword = await bcrypt.hash("1234567", 10);
+    const tempPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    let finalRole = "user"; 
+
+
+    if (req.user.role === "admin" && req.body.role) {
+     const allowedRoles = ["user", "admin"];
+
+     if (!allowedRoles.includes(req.body.role)) {
+       return res.status(403).json({
+         message: "Invalid role"
+       });
+     }
+
+     finalRole = req.body.role;
+   }
 
     const user = await User.create({
       name,
       email,
-      password: hashedpassword,
-      role,
+      password: hashedPassword,
+      role: finalRole,
       position,
-      isActive,
+      status,
       shedule,
       skills,
       bio,
       phone,
-      location
+      location,
+      providers: ["local"]
     });
     
     const {password, ...safeUser} = user.toObject();
@@ -120,12 +144,14 @@ const createUser = async (req, res) => {
     res.status(201).json({
       success: true,
       user: safeUser,
+      tempPassword,  //optional (for testing)
       message: "User created successfully"
     });
 
   } catch (error) {
     res.status(500).json({
-      message: error.message
+      message: "User creation failed",
+      error: error.message
     });
   }
 };
@@ -137,70 +163,73 @@ const updateUser = async (req, res) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
-    // Password update yaha allow nahi karenge
-    const { password, ...updateData } = req.body;
+    const restrictedFields = ["password", "role", "providers", "_id",];
+
+    const updateData = { ...req.body };
+
+    for (let field of restrictedFields) {
+      delete updateData[field];
+    }
 
     Object.assign(user, updateData);
 
     await user.save();
 
+    const { password, ...userData } = user._doc;
+
     res.status(200).json({
       success: true,
       message: "User updated successfully",
-      updatedUser: user
+      user: userData,
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Update failed",
+      error: error.message,
+    });
   }
 };
 
-const deactivateUser = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
-    const { id } = req.params;
 
-    const user = await User.findById(id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if(req.user.role != "admin") {
+      return res.status(403).json({
+           message: "Forbidden: Admins only",
+        });
     }
 
-    user.isActive = false;
-    await user.save();
+    const {id} = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        message: "User ID is required",
+      });
+    }
+
+    const user = await User.findByIdAndDelete(id);
+
+    if(!user) {
+      return res.status(404).json({
+          message: "User not found",
+        });
+    }
 
     res.status(200).json({
-      success: true,
-      message: "User deactivated successfully",
+        success: true,
+        message: "User deleted successfully",
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-const activateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const user = await User.findById(id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    user.isActive = true;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "User activated successfully",
+    res.status(500).json({
+      message: "Internal Sevre Error",
     });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
 };
 
@@ -208,6 +237,6 @@ module.exports = {
   getAllUsers,
   createUser,
   updateUser,
-  deactivateUser,
-  activateUser,
+  deleteUser
+  
 };

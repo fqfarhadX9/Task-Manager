@@ -17,9 +17,14 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
       minlength: 6,
       select: false,
+    },
+
+    providers: {
+      type: [String],
+      enum: ["local", "google"],
+      default: ["local"],
     },
 
     profileImageUrl: {
@@ -36,7 +41,7 @@ const userSchema = new mongoose.Schema(
     // developer / designer / marketer etc
     position: {
       type: String,
-      default: "Member",
+      default: "Fresher",
     },
 
     skills: [
@@ -68,7 +73,7 @@ const userSchema = new mongoose.Schema(
     shedule : {
       type: String,
       enum: ["office", "remote"],
-      required: true
+      default: "office"
     },
 
     phone: {
