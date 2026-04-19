@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { X, Gift } from "lucide-react";
+import { X, Gift, MoreHorizontal } from "lucide-react";
 import axios from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
+import DotMenu from "./DotMenu.jsx";
+import toast from "react-hot-toast";
 
-const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
+const MemberDetailsModal = ({ member, setEditMember, onClose, refresh }) => {
   const [activeTab, setActiveTab] = useState("info");
   const [projects, setProjects] = useState([])
-  const [loadingProjects, setLoadingProjects] = useState(false)
+  const [loadingProjects, setLoadingProjects] = useState(false);
+   const [loading, setLoading] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,6 +26,21 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
       setLoadingProjects(false);
     }
   }
+  
+  // user(member) delete func
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await axios.delete(`/user/${member._id}`);
+      toast.success("User deleted successfully");
+      onClose()
+      refresh()
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Delete failed");
+    }finally {
+      setLoading(false);
+    } 
+  }
 
   useEffect(() => {
     if (activeTab === "projects") {
@@ -32,7 +52,27 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
 
-      <div className="bg-white dark:bg-gray-950 w-[650px] rounded-xl border border-gray-200 dark:border-gray-800 p-6 relative">
+      <div className="bg-white dark:bg-gray-950 w-[95%] sm:w-[500px] md:w-[650px] max-h-[90vh] overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-800 p-4 sm:p-6 relative">
+      
+        <div className="absolute right-10 sm:right-12 top-4 text-gray-400 hover:text-gray-500">
+          <button
+          onClick={() => setShowMenu(!showMenu)}
+          >
+           <MoreHorizontal size={20}/> 
+          </button>
+
+          {showMenu && 
+            <DotMenu 
+              loading={loading} 
+              onEdit={() => {
+                setEditMember(member);
+                onClose();
+              }} 
+              onDeleteClick={() => setShowConfirm(true)} 
+              setShowMenu={setShowMenu}
+            />
+          }
+        </div>
 
         <button
           onClick={() => {
@@ -43,7 +83,7 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-4">
 
           <img
             src={member?.profileImageUrl}
@@ -74,7 +114,7 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
 
         </div>
 
-        <div className="flex bg-blue-50 dark:bg-[#020617] rounded-lg p-1 mb-6">
+        <div className="flex flex-col sm:flex-row bg-blue-50 dark:bg-[#020617] rounded-lg p-1 mb-6 mt-4">
 
           <button
             onClick={() => setActiveTab("info")}
@@ -207,7 +247,7 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
           <div>
             <div className="flex gap-2 flex-wrap">
 
-              {(member.skills).map((skill, index) => (
+              {(member?.skills || []).map((skill, index) => (
                   <span
                     key={index}
                     className="bg-blue-700/90 dark:bg-gray-900/50 text-white text-xs px-3 py-1 rounded-lg"
@@ -245,15 +285,14 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
         )}
 
         {/* Footer */}
-        <div className="flex justify-between mt-8">
+        <div className="flex flex-col sm:flex-row gap-2 sm:justify-between mt-4">
           <button
             onClick={() => {
-              setEditMember(member);
               onClose();
             }}
             className="px-4 py-2 border border-gray-200 dark:border-gray-800 hover:bg-blue-100 dark:hover:bg-gray-900/50 text-black dark:text-white rounded-lg text-sm"
           >
-            Edit
+            Close
           </button>
 
           <div className="flex gap-3">
@@ -271,6 +310,45 @@ const MemberDetailsModal = ({ member, setEditMember, onClose }) => {
         </div>
 
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          
+          <div className="bg-white dark:bg-gray-950 p-6 rounded-xl  w-[80%] sm:w-[300px]">
+            
+            <h2 className="text-lg font-semibold mb-2 text-black dark:text-white">
+              Delete Member
+            </h2>
+
+            <p className="text-sm text-gray-500 mb-4">
+              Are you sure you want to delete this member?
+            </p>
+
+            <div className="flex justify-end gap-2">
+              
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-3 py-1 border border-gray-200 dark:border-gray-800 hover:bg-blue-100 dark:hover:bg-gray-900/50 rounded-md text-sm"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={loading}
+                onClick={() => {
+                  handleDelete();
+                  setShowConfirm(false);
+                }}
+                className="px-3 py-1 bg-red-500  hover:bg-red-600 border border-gray-200 dark:border-gray-800 text-white rounded-md text-sm"
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "../../api/axios.js";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 
-const EditMemberModal = ({ member, onClose, refresh }) => {
+const EditMemberModal = ({ member, onClose,  refresh }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: member.name,
@@ -79,11 +79,11 @@ const EditMemberModal = ({ member, onClose, refresh }) => {
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-start overflow-y-auto py-10">
 
-      <form onSubmit={handleUpdate} className="bg-white dark:bg-[#020617] p-6 rounded-xl w-[500px] overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-800">
+      <form onSubmit={handleUpdate} className="bg-white dark:bg-gray-950 p-6 rounded-xl w-[95%] sm:w-[500px] md:w-[650px] overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-800">
 
         <div className="flex justify-between mb-4 text-black dark:text-white ">
           <h2>Edit Member</h2>
-          <X onClick={onClose} className="cursor-pointer hover:text-red-400" />
+          <X onClick={() => onClose(null)} className="cursor-pointer hover:text-red-400" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">

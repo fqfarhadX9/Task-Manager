@@ -98,7 +98,7 @@ const AddMemberModal = ({ setShowAddMember, fetchMembers }) => {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 overflow-y-auto py-10">
 
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-950 w-[520px] overflow-y-auto max-h-[90vh] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-950 w-[95%] sm:w-[500px] md:w-[650px] overflow-y-auto max-h-[90vh] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
 
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-black dark:text-white">
