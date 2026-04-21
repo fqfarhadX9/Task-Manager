@@ -1,4 +1,3 @@
-
 import AssignUsersModal from "./AssignUsersModel";
 import { useNavigate } from "react-router-dom";
 
@@ -26,11 +25,11 @@ const TaskCard = ({ task, setEditingTask}) => {
   }
 
   return (
-    <div className="group bg-gray-900/60 backdrop-blur-sm border border-gray-800 hover:border-gray-700 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="group bg-white dark:bg-gray-950 border border-gray-200 dark:border-[#1E293B] rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
       {/* Top Section */}
       <div className="flex justify-between items-start gap-4">
-        <h3 className="text-lg font-semibold text-white leading-snug">
+        <h3 className="text-lg font-semibold text-black dark:text-white leading-snug">
           {task.title}
         </h3>
 
@@ -38,7 +37,7 @@ const TaskCard = ({ task, setEditingTask}) => {
 
           {/* Priority Badge */}
           <span
-            className={`px-3 py-1 text-xs rounded-full font-medium
+            className={`px-3 py-1 text-xs rounded-full font-medium 
               ${
                 task.priority === "high"
                   ? "bg-red-500/20 text-red-400"
@@ -69,7 +68,7 @@ const TaskCard = ({ task, setEditingTask}) => {
         </div>
       </div>
 
-      <p className="text-sm text-gray-400 mt-3 line-clamp-2">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 line-clamp-2">
         {task.description}
       </p>
 
@@ -79,11 +78,12 @@ const TaskCard = ({ task, setEditingTask}) => {
 
       {task.assignedTo?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
-          <span className="text-gray-500">Assigned To:</span>{" "}
+          <span className="text-gray-500 dark:text-gray-400">Assigned To:</span>{" "}
           {task.assignedTo.map((u) => (
             <div
               key={u._id}
-              className="bg-gray-800 text-gray-300 px-3 py-1 rounded-full text-xs"
+              className=" bg-gray-200 dark:bg-[#1E293B]
+            text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs"
             >
               {u.name}
             </div>
@@ -96,7 +96,9 @@ const TaskCard = ({ task, setEditingTask}) => {
         {canUpdate && (
           <button
             onClick={() => setEditingTask(task)}
-            className="text-sm px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
+            className="text-sm px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#1E293B]
+          text-gray-800 dark:text-gray-300
+          hover:bg-gray-300 dark:hover:bg-[#334155] transition"
           >
             Edit
           </button>
@@ -104,7 +106,9 @@ const TaskCard = ({ task, setEditingTask}) => {
 
         <button
           onClick={() => navigate(`/task/${task._id}`)}
-          className="text-sm px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-gray-200 transition"
+          className="text-sm px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#1E293B]
+          text-gray-800 dark:text-gray-300
+          hover:bg-gray-300 dark:hover:bg-[#334155] transition"
         >
           View Details
         </button>

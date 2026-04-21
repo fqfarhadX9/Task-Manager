@@ -28,9 +28,9 @@ export default function TeamActivity() {
   ];
 
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 h-full">
 
-      <h2 className="text-lg font-semibold text-white mb-6">
+      <h2 className="text-lg font-semibold text-black dark:text-white mb-6">
         Team Activity
       </h2>
 
@@ -46,11 +46,11 @@ export default function TeamActivity() {
             {/* Content */}
             <div className="flex-1">
               <p className="text-sm text-white">
-                <span className="font-semibold">
+                <span className="font-semibold text-gray-800 dark:text-white">
                   {activity.name}
                 </span>{" "}
                 {activity.action}{" "}
-                <span className="text-indigo-400">
+                <span className="text-indigo-700 dark:text-indigo-400">
                   {activity.task}
                 </span>
               </p>

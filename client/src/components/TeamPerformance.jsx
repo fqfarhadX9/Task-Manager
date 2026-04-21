@@ -8,9 +8,9 @@ export default function TeamPerformance() {
   ];
 
   return (
-    <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-6 h-full">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 h-full">
 
-      <h2 className="text-lg font-semibold text-white mb-6">
+      <h2 className="text-lg font-semibold text-black dark:text-white mb-6">
         Team Performance
       </h2>
 
@@ -25,17 +25,17 @@ export default function TeamPerformance() {
                   {member.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm text-white">{member.name}</p>
-                  <p className="text-xs text-gray-400">{member.role}</p>
+                  <p className="text-sm text-gray-800 dark:text-white">{member.name}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{member.role}</p>
                 </div>
               </div>
 
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-900 dark:text-gray-400">
                 {member.performance}%
               </span>
             </div>
 
-            <div className="w-full h-3 bg-[#1F2937] rounded-full">
+            <div className="w-full h-3 bg-gray-200 dark:bg-[#1F2937] rounded-full">
               <div
                 className="bg-green-500 h-3 rounded-full"
                 style={{ width: `${member.performance}%` }}
