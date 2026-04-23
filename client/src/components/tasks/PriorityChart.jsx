@@ -11,7 +11,7 @@ export default function PriorityChart({ data = [] }) {
   const totalTasks = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
       <h2 className="text-base sm:text-lg font-semibold mb-4 text-black dark:text-white">
         Priority Distribution

@@ -12,7 +12,7 @@ export default function TaskCategories({ data = [] }) {
   };
 
   return (
-    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
       <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-black dark:text-white">
         Task Categories

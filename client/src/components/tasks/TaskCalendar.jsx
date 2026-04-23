@@ -28,7 +28,7 @@ export default function TaskCalendar({ data = [] }) {
   });
 
   return (
-    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 sm:p-6 rounded-xl">
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
 

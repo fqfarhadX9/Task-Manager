@@ -4,7 +4,7 @@ export default function TaskStats({ stats }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 
-      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 md:p-6 rounded-xl border flex justify-between items-center">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 md:p-6 rounded-xl flex justify-between items-center">
         <div>
           <p className="text-gray-400 text-sm md:text-base">Total Tasks</p>
           <h2 className="text-2xl md:text-3xl font-bold mt-1 md:mt-2 text-black dark:text-white">
@@ -16,7 +16,7 @@ export default function TaskStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 md:p-6 rounded-xl flex justify-between items-center">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 md:p-6 rounded-xl flex justify-between items-center">
         <div>
           <p className="text-gray-400 text-sm md:text-base">Completed</p>
           <h2 className="text-2xl md:text-3xl font-bold mt-1 md:mt-2 text-black dark:text-white">
@@ -28,7 +28,7 @@ export default function TaskStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 md:p-6 rounded-xl border flex justify-between items-center">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 md:p-6 rounded-xl flex justify-between items-center">
         <div>
           <p className="text-gray-400 text-sm md:text-base">Overdue</p>
           <h2 className="text-2xl md:text-3xl font-bold mt-1 md:mt-2 text-black dark:text-white">
@@ -40,7 +40,7 @@ export default function TaskStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 p-4 md:p-6 rounded-xl border flex justify-between items-center">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 md:p-6 rounded-xl flex justify-between items-center">
         <div>
           <p className="text-gray-400 text-sm md:text-base">Due Soon</p>
           <h2 className="text-2xl md:text-3xl font-bold mt-1 md:mt-2 text-black dark:text-white">
