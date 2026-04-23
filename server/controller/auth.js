@@ -2,6 +2,8 @@ const User = require("../model/user.js")
 const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
+const { sendEmailOtp } = require("../utils/sendEmailOtp.js");
+
 
 
 const signup = async (req, res) => {
@@ -191,8 +193,108 @@ const googleSignin = async (req, res) => {
   }
 };
 
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  let user;
+
+  if (email.includes("@")) {
+    user = await User.findOne({ email: email.toLowerCase() });
+  } 
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedOtp = await bcryptjs.hash(otp, 10);
+
+  user.otp = hashedOtp;
+  user.otpExpires = Date.now() + 5 * 60 * 1000;
+
+  await user.save();
+
+  if (email.includes("@")) {
+    await sendEmailOtp(user.email, otp);
+  } 
+
+  res.json({ message: "OTP sent" });
+};
+
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const  user = await User.findOne({ email: email.toLowerCase() });
+      
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+  
+    const isOtpValid = await bcryptjs.compare(otp, user.otp);
+    if (!isOtpValid) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+  
+    if (!user.otpExpires || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+  
+    const resetToken = require("crypto").randomBytes(32).toString("hex");
+  
+    user.resetToken = resetToken;
+    user.resetTokenExpires = Date.now() + 10 * 60 * 1000;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+  
+    await user.save();
+  
+    res.json({ resetToken });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error"});
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    const user = await User.findOne({resetToken}).select("+password");
+
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid token" });
+    }
+
+    if (!user.resetTokenExpires || user.resetTokenExpires < new Date()) {
+      return res.status(400).json({ message: "token expired" });
+    }
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+
+    if (!user.providers.includes("local")) {
+      user.providers.push("local");
+    }
+
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: "Password reset successful" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
     signup,
     signin,
     googleSignin, 
+    sendOtp,
+    verifyOtp,
+    resetPassword
 }
