@@ -1,8 +1,10 @@
 import DayCell from "./DayCell";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CalendarGrid({
   events,
-  currentDate
+  currentDate,
+  setCurrentDate
 }) {
 
   const year = currentDate.getFullYear();
@@ -26,9 +28,54 @@ export default function CalendarGrid({
     dates.push(i);
   }
 
+  const monthName = currentDate.toLocaleString("default", { month: "long" });
+  const year1 = currentDate.getFullYear();
+
+  const prevMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+    );
+  };
+
+  const nextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+    );
+  };
+
+
+
   return (
 
-    <div>
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 rounded-md">
+
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-xl font-semibold text-black dark:text-white">
+          {monthName} {year1}
+        </h1>
+
+        <div className="flex gap-3">
+
+        <button
+          onClick={prevMonth}
+          className="hover:bg-blue-100 dark:hover:bg-gray-900/50 px-1 py-0.5 rounded"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <p className="border border-gray-200 dark:border-gray-800 text-black dark:text-white px-2 py-0.5 rounded-md">Today</p>
+
+        <button
+          onClick={nextMonth}
+          className="hover:bg-blue-100 dark:hover:bg-gray-900/50 px-1 py-0.5 rounded"
+        >
+          <ChevronRight size={16} />
+        </button>
+
+      </div>
+
+
+      </div>
 
       <div className="grid grid-cols-7 text-center mb-2 text-gray-400">
 

@@ -1,42 +1,20 @@
 export default function CalendarHeader({ currentDate, setCurrentDate}) {
 
-  const prevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-    );
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-    );
-  };
-
-  const monthName = currentDate.toLocaleString("default", { month: "long" });
-  const year = currentDate.getFullYear();
-
   return (
     <div className="flex items-center justify-between">
 
-      <h1 className="text-2xl font-semibold">
-        {monthName} {year}
+      <h1 className="text-3xl font-semibold text-black dark:text-white">
+        Team Calendar
       </h1>
 
-      <div className="flex gap-3">
+      <div className="px-6 py-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md">
 
-        <button
-          onClick={prevMonth}
-          className="bg-[#1F2937] px-4 py-2 rounded-md"
-        >
-          Prev
-        </button>
-
-        <button
-          onClick={nextMonth}
-          className="bg-[#1F2937] px-4 py-2 rounded-md"
-        >
-          Next
-        </button>
+        <select  className="bg-transparent outline-none text-black dark:text-white cursor-pointer">
+          <option className="bg-white dark:bg-gray-950">Day</option>
+          <option className="bg-white dark:bg-gray-950">Week</option>
+          <option className="bg-white dark:bg-gray-950">Month</option>
+          <option className="bg-white dark:bg-gray-950">Year</option>
+        </select>
 
       </div>
 
