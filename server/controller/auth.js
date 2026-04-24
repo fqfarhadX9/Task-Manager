@@ -290,11 +290,48 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const verifyAdminCode = async (req, res) => {
+  try {
+    const { adminJoinCode } = req.body;
+    const userId = req.user.id;
+
+    if (!adminJoinCode) {
+      return res.status(400).json({ message: "Admin code is required" });
+    }
+
+    if (adminJoinCode !== process.env.ADMINJOIN_CODE) {
+      return res.status(400).json({ message: "Invalid admin code" });
+    }
+
+
+    const existingUser = await User.findById(userId);
+    if (existingUser.role === "admin") {
+      return res.status(200).json({ message: "Already an admin" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { role: "admin" },
+      { new: true }
+    );
+
+    res.json({
+      message: "Admin access granted",
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
     signup,
     signin,
     googleSignin, 
     sendOtp,
     verifyOtp,
-    resetPassword
+    resetPassword,
+    verifyAdminCode
 }
