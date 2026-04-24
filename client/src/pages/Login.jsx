@@ -197,6 +197,7 @@ const Login = () => {
 
           <div className="flex justify-center">
             <GoogleLogin
+              size={22}
               onSuccess={handleGoogleLogin}
               onError={() => setError("Google Login Failed")}
             />
@@ -257,7 +258,7 @@ const Login = () => {
         )}
 
         {showForgot && (
-          <div className="bg-white dark:bg-gray-950 w-[95%] md:w-[650px] sm:w-[500px] h-[400px] md:h-[600px] sm:h-[450px] p-3 rounded-xl border border-gray-200 dark:border-gray-800">
+          <div className="bg-gray-950 w-[95%] md:w-[650px] sm:w-[500px] h-[400px] md:h-[600px] sm:h-[450px] p-3 rounded-xl border border-gray-800">
 
             {/* LOGO */}
             <div className="relative flex items-center">
@@ -285,7 +286,7 @@ const Login = () => {
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-white dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-gray-950 border border-gray-700 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
                 />
 
                 {error && (
@@ -297,7 +298,7 @@ const Login = () => {
                  <button
                   onClick={handleSendOtp}
                   disabled={loading}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-20 md:mt-[260px] bg-blue-400 hover:bg-blue-500 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-20 md:mt-[260px] bg-blue-400 hover:bg-blue-500 text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm"
                 >
                   {loading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -311,7 +312,7 @@ const Login = () => {
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-white dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-gray-950 border border-gray-700 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
                 />
 
                 {error && (
@@ -323,7 +324,7 @@ const Login = () => {
                 <button 
                   onClick={handleVerifyOtp} 
                   disabled={loading}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-20 md:mt-[260px] bg-blue-400 hover:bg-blue-500 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm">
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-20 md:mt-[260px] bg-blue-400 hover:bg-blue-500 text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm">
                   {loading ? "Verifying OTP..." : "Verify OTP"}
                 </button>
               </>
@@ -336,7 +337,7 @@ const Login = () => {
                   placeholder="New Password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-white dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-gray-950 border border-gray-700 text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
                 />
 
                 <input
@@ -344,7 +345,7 @@ const Login = () => {
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-white dark:bg-[#020617] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-6 bg-gray-950 border border-gray-700 text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-lg px-3 py-2 md:py-4 text-sm"
                 />
 
                 {error && (
@@ -356,7 +357,7 @@ const Login = () => {
                 <button 
                   onClick={handleResetPassword} 
                   disabled={loading}
-                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-7 md:mt-[180px] bg-blue-400 hover:bg-blue-500 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm"
+                  className="w-[200px] md:w-[480px] ml-16 mr-16 mt-7 md:mt-[180px] bg-blue-400 hover:bg-blue-500 text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 rounded-full px-3 py-2 md:py-4 text-sm"
                 >
                   {loading ? "Resetting Password..." : "Reset Password"}
                 </button>

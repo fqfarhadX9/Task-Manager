@@ -9,6 +9,7 @@ import Members from "./pages/Members";
 import TaskPage from "./pages/TaskPage";
 import CalendarPage from "./pages/CalenderPage";
 import Attendance from "./pages/Attendance";
+import AdminJoinCode from "./pages/AdminJoinCode";
 
 function App() {
   return (
@@ -45,6 +46,13 @@ function App() {
                 <Members />
               </Layout>
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-join-code"
+          element={
+            <AdminJoinCode />
           }
         />
 
