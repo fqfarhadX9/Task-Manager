@@ -60,7 +60,7 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
 
   return (
 
-    <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-4 sm:p-6">
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
 
@@ -80,7 +80,7 @@ export default function TaskStatusCard({ task, handleEdit, handleComplete, error
 
           <button 
             onClick={() => handleEdit(task)}
-            className="border border-gray-200 dark:border-gray-700 text-black dark:text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm dark:hover:bg-gray-800">
+            className="border border-gray-200 dark:border-gray-700 text-black dark:text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm hover:bg-blue-100 dark:hover:bg-gray-900/50">
               Edit
           </button>
 

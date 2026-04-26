@@ -38,7 +38,7 @@ export default function TaskStatus({fetchDashboard, filteredTasks}) {
 
     <div className="mt-6 sm:mt-8">
 
-      <div className="bg-white dark:bg-[#020818] border border-gray-100 dark:border-gray-800 rounded-xl bg-card p-4 sm:p-6">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl bg-card p-4 sm:p-6">
 
       <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-black dark:text-white">
         Task Status
