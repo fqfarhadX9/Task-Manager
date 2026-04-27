@@ -35,17 +35,17 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       
-      <div className="bg-gray-900/80 border border-gray-800 backdrop-blur-xl p-8 rounded-2xl w-full max-w-lg shadow-2xl animate-fadeIn">
+      <div className="bg-white dark:bg-gray-950 border border-gray-800 backdrop-blur-xl p-8 rounded-2xl w-full max-w-lg shadow-2xl animate-fadeIn">
 
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-white">
+          <h2 className="text-2xl font-semibold text-black dark:text-white">
             Edit Task
           </h2>
 
           <button
             onClick={() => setEditingTask(null)}
-            className="text-gray-400 hover:text-white transition text-xl"
+            className="text-gray-400 hover:text-red-500 transition text-xl"
           >
             ✕
           </button>
@@ -58,7 +58,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
               Title
             </label>
             <input
-              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
+              className="w-full border border-gray-200 dark:border-gray-800 text-gray-400 focus:border-white focus:ring-2 focus:ring-blue-400 p-3 rounded-xl transition outline-none"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -69,7 +69,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
               Category
             </label>
             <input
-              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
+              className="w-full border border-gray-200 dark:border-gray-800 text-gray-400 focus:border-white focus:ring-2 focus:ring-blue-400 p-3 rounded-xl transition outline-none"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             />
@@ -81,7 +81,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
             </label>
             <textarea
               rows="4"
-              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none resize-none"
+              className="w-full border border-gray-200 dark:border-gray-800 text-gray-400 focus:border-white focus:ring-2 focus:ring-blue-400 p-3 rounded-xl transition outline-none resize-none"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -93,7 +93,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
             </label>
             <input
               type="date"
-              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
+              className="w-full border border-gray-200 dark:border-gray-800 text-gray-400 focus:border-white focus:ring-2 focus:ring-blue-400 p-3 rounded-xl transition outline-none"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
@@ -104,7 +104,7 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
               Priority
             </label>
             <select
-              className="w-full bg-gray-800 border border-gray-700 focus:border-white focus:ring-2 focus:ring-white p-3 rounded-xl transition outline-none"
+              className="w-full border border-gray-200 dark:border-gray-800 text-gray-400 focus:border-white focus:ring-2 focus:ring-blue-400 p-3 rounded-xl transition outline-none"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
             >
@@ -119,14 +119,14 @@ const EditTaskModal = ({ task, setEditingTask, setTasks }) => {
             <button
               type="button"
               onClick={() => setEditingTask(null)}
-              className="px-5 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition text-gray-300"
+              className="px-5 py-2 rounded-lg bg-gray-800 dark:bg-white hover:bg-gray-700 transition text-white dark:text-black font-medium"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-white text-black font-medium hover:bg-gray-200 transition shadow-md"
+              className="px-6 py-2 rounded-lg text-white font-medium bg-blue-400 hover:bg-blue-500 transition shadow-md"
             >
               Update Task
             </button>
