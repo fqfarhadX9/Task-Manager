@@ -25,6 +25,69 @@ const createTask = async (req, res) => {
   }
 };
 
+const duplicateTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task || task.isDeleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
+
+    const isAdmin = req.user.role === "admin";
+
+    // if (!isCreator && !isAdmin) {
+    //   return res.status(403).json({ message: "Not allowed" });
+    // }
+
+    const newTask = new Task({
+      title: task.title + " (Copy)",
+      description: task.description,
+      priority: task.priority,
+      status: "pending", // reset
+      category: task.category,
+      dueDate: task.dueDate,
+
+      createdBy: req.user._id,
+      assignedTo: task.assignedTo, // optional
+
+      todoChecklist: (task.todoChecklist || []).map(todo => ({
+        text: todo.text,
+        completed: false,
+      })),
+
+      subtasks: (task.subtasks || []).map(sub => ({
+        title: sub.title,
+        description: sub.description,
+        todoChecklist: (sub.todoChecklist || []).map(t => ({
+          text: t.text,
+          completed: false,
+
+          status: "pending",
+          progress: 0,
+        })),
+      })),
+      
+      attachments: task.attachments || [],
+      activity: [],
+      comments: [],
+      progress: 0,
+    });
+
+    await newTask.save();
+
+    res.status(201).json({
+      message: "Task duplicated successfully",
+      task: newTask,
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const getMyTasks = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -224,9 +287,8 @@ const deleteTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const isCreator = task.createdBy
-      .map(id => id.toString())
-      .includes(req.user._id.toString());
+    const isCreator =
+      task.createdBy.toString() === req.user._id.toString();
 
     const isAdmin = req.user.role === "admin";
 
@@ -327,7 +389,7 @@ const getAssignedTasks = async (req, res) => {
   }
 };
 
-const updateTaskStatus = async (req, res) => {
+const changeTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -339,7 +401,7 @@ const updateTaskStatus = async (req, res) => {
 
     const task = await Task.findById(id);
 
-    if (!task) {
+    if (!task || task.isDeleted) {
       return res.status(404).json({ message: "Task not found" });
     }
 
@@ -1186,6 +1248,7 @@ const getUserAllAssignedTasks = async (req, res) => {
 
 module.exports = {
   createTask,
+  duplicateTask,
   getMyTasks,
   assignTask,
   unassignTask,
@@ -1193,7 +1256,7 @@ module.exports = {
   deleteTask,
   getAllTasks,
   getAssignedTasks,
-  updateTaskStatus,
+  changeTaskStatus,
   getSingleTask,
   addTodo,
   toggleTodo,

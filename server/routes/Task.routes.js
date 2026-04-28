@@ -5,13 +5,14 @@ const {protect, isAdmin} = require("../middleware/authMiddleware.js");
 
 const {
   createTask,
+  duplicateTask,
   getMyTasks,
   assignTask,
   updateTask,
   deleteTask, 
   getAllTasks, 
   getAssignedTasks, 
-  updateTaskStatus,
+  changeTaskStatus,
   unassignTask,
   getSingleTask,
   addTodo,
@@ -30,14 +31,15 @@ const {
 } = require("../controller/task.controller.js");
 
 router.post("/", protect, createTask);
+router.post("/:id/duplicate", protect, duplicateTask);
 router.get("/my-tasks", protect, getMyTasks);
-router.put("/assign/:id", protect, isAdmin, assignTask);
+router.put("/assign/:id", protect, assignTask);
 router.put("/unassign/:id", protect, unassignTask);
 router.put("/:id", protect, updateTask);
-router.delete("/:id", protect, isAdmin, deleteTask);
+router.delete("/:id", protect, deleteTask);
 router.get("/", protect, isAdmin, getAllTasks);
 router.get("/assigned", protect, getAssignedTasks);
-router.put("/status/:id", protect, updateTaskStatus);
+router.put("/:id/status", protect, changeTaskStatus);
 router.post("/todo/:id", protect, addTodo);
 router.put("/todo/:taskId/:todoId", protect, toggleTodo);
 router.delete("/todo/:taskId/:todoId", protect, deleteTodo);
