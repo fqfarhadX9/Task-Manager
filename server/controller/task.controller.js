@@ -38,9 +38,9 @@ const duplicateTask = async (req, res) => {
 
     const isAdmin = req.user.role === "admin";
 
-    // if (!isCreator && !isAdmin) {
-    //   return res.status(403).json({ message: "Not allowed" });
-    // }
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
 
     const newTask = new Task({
       title: task.title + " (Copy)",
@@ -140,16 +140,12 @@ const assignTask = async (req, res) => {
     const { id } = req.params;
     const { userIds } = req.body;
 
-    if (!userIds || userIds.length === 0) {
-      return res.status(400).json({ message: "User IDs required" });
-    }
+    const task = await Task.findById(id);
 
-    const task = await Task.findById(id)
-
-    if (!task) {
+    if (!task || task.isDeleted) {
       return res.status(404).json({ message: "Task not found" });
     }
-    
+
     const isCreator =
       task.createdBy.toString() === req.user._id.toString();
 
@@ -159,26 +155,32 @@ const assignTask = async (req, res) => {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    let newlyAssignedCount = 0;
+    const existing = task.assignedTo.map(id => id.toString());
 
-    userIds.forEach(userId => {
-      const alreadyAssigned = task.assignedTo.some(
-        id => id.toString() === userId.toString()
-      );
+    const toAssign = userIds.filter(id => !existing.includes(id));
+    const toUnassign = existing.filter(id => !userIds.includes(id));
 
-      if (!alreadyAssigned) {
-        task.assignedTo.push(userId);
-        newlyAssignedCount++;
-      }
-    });
+    task.assignedTo.push(...toAssign);
 
-    task.activity.push({
-      action: "assigned",
-      message: `${req.user.name} assigned ${
-      newlyAssignedCount === 1 ? "1 user" : `${newlyAssignedCount} users`
-      }`,
-      performedBy: req.user._id,
-    });
+    task.assignedTo = task.assignedTo.filter(
+      id => !toUnassign.includes(id.toString())
+    );
+
+    if (toAssign.length > 0) {
+      task.activity.push({
+        action: "assigned",
+        message: `${req.user.name} assigned ${toAssign.length} user(s)`,
+        performedBy: req.user._id,
+      });
+    }
+
+    if (toUnassign.length > 0) {
+      task.activity.push({
+        action: "unassigned",
+        message: `${req.user.name} unassigned ${toUnassign.length} user(s)`,
+        performedBy: req.user._id,
+      });
+    }
 
     await task.save();
 
@@ -188,14 +190,13 @@ const assignTask = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Task assigned successfully",
       task: updatedTask,
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const unassignTask = async (req, res) => {
   try {
     const { id } = req.params;
