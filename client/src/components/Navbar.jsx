@@ -1,73 +1,52 @@
-import { Search, Plus, Bell, Sun, Moon } from "lucide-react";
-import { Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Search, Bell, Sun, Moon, Menu } from "lucide-react";
+import { useTheme } from "../hooks/useTheme.js";
 
 export default function Navbar({ sidebarOpen, setSidebarOpen }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const [darkMode, setDarkMode] = useState(true);
-
-  // Dark Mode Toggle
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 border-b border-gray-700 dark:border-[#1F2937] 
-    bg-white dark:bg-[#0F172A] 
-    flex items-center justify-between px-6 transition-colors duration-300">
+    <header className="h-16 bg-white dark:bg-gray-950 flex items-center justify-between px-6 transition-colors duration-300">
+
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#1E293B] transition"
+        className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#1E293B]"
       >
-       <Menu size={20} />
+        <Menu size={20} />
       </button>
+
       {/* SEARCH */}
       <div className="relative w-80">
-        <Search
-          size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input
           type="text"
-          placeholder="Search tasks..."
-          className="w-full bg-gray-100 dark:bg-[#111827] 
-          border border-gray-300 dark:border-[#1F2937] 
-          rounded-lg pl-10 pr-4 py-2 text-sm 
-          text-gray-800 dark:text-gray-300 
-          focus:outline-none focus:ring-1 focus:ring-blue-600"
+          placeholder="Search..."
+          className="w-full bg-white dark:bg-gray-950
+          border border-gray-200 dark:border-gray-800
+          rounded-lg pl-10 pr-4 py-2 text-sm
+          text-gray-800 dark:text-gray-300
+          focus:outline-none  hover:border-blue-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT */}
       <div className="flex items-center gap-4">
 
+        {/* 🌙 Toggle */}
         <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#1E293B] transition"
+          onClick={toggleTheme}
+          className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#1E293B]"
         >
-          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        <div className="relative cursor-pointer">
-          <Bell size={20} className="text-gray-600 dark:text-gray-300" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-xs text-white w-4 h-4 flex items-center justify-center rounded-full">
-            3
-          </span>
-        </div>
+        <Bell className="text-gray-600 dark:text-gray-300" size={20} />
 
-        <div className="cursor-pointer">
+        <div>
           {user?.profileImageUrl ? (
-            <img
-              src={user.profileImageUrl}
-              alt="profile"
-              className="w-8 h-8 rounded-full object-cover"
-            />
+            <img src={user.profileImageUrl} className="w-8 h-8 rounded-full" />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold">
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
               {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </div>
           )}

@@ -5,7 +5,7 @@ import Sidebar from "./Sidebar";
 export default function Layout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
-    <div className="flex h-screen bg-blue-50 dark:bg-[#020818] text-gray-300">
+    <div className="flex h-screen bg-blue-50 dark:bg-[#080E1A] text-gray-300">
       <Sidebar sidebarOpen={sidebarOpen} />
 
       <div className="flex flex-col flex-1">

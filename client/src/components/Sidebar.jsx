@@ -3,15 +3,27 @@ import {
   Users,
   CheckSquare,
   Calendar,
-  // BarChart2,
   MessageSquare,
   Clock4,
 } from "lucide-react";
 
 import SidebarItem from "./SidebarItem";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Sidebar({ sidebarOpen }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const menuItems = [
+    { label: "Dashboard", icon: <LayoutDashboard size={18} />, path: "/dashboard" },
+    { label: "Members", icon: <Users size={18} />, path: "/members" },
+    { label: "Tasks", icon: <CheckSquare size={18} />, path: "/my-tasks" },
+    { label: "Calendar", icon: <Calendar size={18} />, path: "/calendar" },
+    { label: "Attendance", icon: <Clock4 size={18} />, path: "/attendance" },
+    { label: "Messages", icon: <MessageSquare size={18} />, path: "/messages" },
+  ];
 
   return (
     <aside
@@ -19,30 +31,40 @@ export default function Sidebar({ sidebarOpen }) {
         ${sidebarOpen ? "w-64" : "w-0"}
         transition-all duration-300
         overflow-hidden
-        bg-[#0F172A]
-        border-r border-[#1F2937]
+        bg-white dark:bg-gray-950
         flex flex-col
       `}
     >
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-[#1F2937]">
-        <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+      {/* HEADER */}
+      <div className="flex items-center gap-3 px-6 h-16">
+        <div className="w-9 h-9 rounded-lg bg-blue-400 flex items-center justify-center text-white font-bold">
           ✓
         </div>
-        <h1 className="text-lg font-semibold text-white">Taskify</h1>
+        <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
+          Taskify
+        </h1>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active />
-        <SidebarItem icon={<Users size={18} />} label="Members" active/>
-        <SidebarItem icon={<CheckSquare size={18} />} label="Tasks" active />
-        <SidebarItem icon={<Calendar size={18} />} label="Calendar" active/>
-        <SidebarItem icon={<Clock4 size={18} />} label="Attendance" active/>
-        <SidebarItem icon={<MessageSquare size={18} />} label="Messages" active/>
+      {/* NAV */}
+      <nav className="flex-1 px-4 py-6 space-y-5">
+        <h1 className="text-gray-500 dark:text-gray-400 text-sm">
+          MAIN NAVIGATION
+        </h1>
+
+        {menuItems.map((item) => (
+          <SidebarItem
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            active={location.pathname === item.path}
+            onClick={() => navigate(item.path)}
+          />
+        ))}
       </nav>
 
-      <div className="px-4 py-4 border-t border-[#1F2937]">
+      {/* USER */}
+      <div className="px-4 py-4 border-t border-gray-200 dark:border-[#1E293B]">
         <div className="flex items-center gap-3">
-
           {user?.profileImageUrl ? (
             <img
               src={user.profileImageUrl}
@@ -56,14 +78,13 @@ export default function Sidebar({ sidebarOpen }) {
           )}
 
           <div>
-            <p className="text-sm font-medium text-white">
+            <p className="text-sm font-medium text-gray-800 dark:text-white">
               {user?.name}
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {user?.email}
             </p>
           </div>
-
         </div>
       </div>
     </aside>

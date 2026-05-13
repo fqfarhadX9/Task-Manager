@@ -33,7 +33,9 @@ function App() {
          path="/task/:id" 
          element={
           <ProtectedRoute>
-            <TaskView />
+            <Layout>
+             <TaskView />
+            </Layout>
           </ProtectedRoute>
          }
         />
